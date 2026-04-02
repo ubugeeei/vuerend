@@ -1,0 +1,23 @@
+{
+  "name": "@vue-server/node",
+  "version": "0.1.0",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@vue-server/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "vite": "^8.0.3",
+    "vue": "^3.5.31"
+  }
+}

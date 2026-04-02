@@ -1,0 +1,12 @@
+{
+  "name": "@examples/cloudflare-worker",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@vue-server/cloudflare": "workspace:*",
+    "@vue-server/core": "workspace:*",
+    "srvx": "^0.11.14",
+    "vite": "^8.0.3",
+    "vue": "^3.5.31"
+  }
+}

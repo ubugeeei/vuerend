@@ -1,0 +1,6 @@
+dist
+node_modules
+.vite
+.turbo
+.DS_Store
+*.tgz

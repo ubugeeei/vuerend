@@ -1,0 +1,62 @@
+{
+  "name": "@vue-server/core",
+  "version": "0.1.0",
+  "description": "Lightweight Vue server renderer and Vite v8 plugin with explicit routing and secure islands.",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.mts",
+      "import": "./dist/vite.mjs"
+    },
+    "./runtime": {
+      "types": "./dist/runtime.d.mts",
+      "import": "./dist/runtime.mjs"
+    },
+    "./client": {
+      "types": "./dist/client.d.mts",
+      "import": "./dist/client.mjs"
+    },
+    "./adapters/node": {
+      "types": "./dist/adapters/node.d.mts",
+      "import": "./dist/adapters/node.mjs"
+    },
+    "./adapters/bun": {
+      "types": "./dist/adapters/bun.d.mts",
+      "import": "./dist/adapters/bun.mjs"
+    },
+    "./adapters/deno": {
+      "types": "./dist/adapters/deno.d.mts",
+      "import": "./dist/adapters/deno.mjs"
+    },
+    "./adapters/cloudflare": {
+      "types": "./dist/adapters/cloudflare.d.mts",
+      "import": "./dist/adapters/cloudflare.mjs"
+    },
+    "./adapters/service-worker": {
+      "types": "./dist/adapters/service-worker.d.mts",
+      "import": "./dist/adapters/service-worker.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@vitejs/plugin-vue": "^6.0.5",
+    "@vitejs/plugin-vue-jsx": "^5.1.5",
+    "@vue/server-renderer": "^3.5.31",
+    "srvx": "^0.11.14"
+  },
+  "peerDependencies": {
+    "vite": "^8.0.3",
+    "vue": "^3.5.31"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}

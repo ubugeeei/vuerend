@@ -1,0 +1,21 @@
+{
+  "name": "vue-server-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^24.8.1",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.3",
+    "vite-plus": "^0.1.15",
+    "vitest": "^4.1.2",
+    "vue": "^3.5.31"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "packageManager": "pnpm@10.13.0"
+}

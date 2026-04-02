@@ -1,0 +1,77 @@
+import { defineConfig } from "vite-plus";
+import type { PackUserConfig } from "vite-plus/pack";
+
+const coreNeverBundle = [
+  "vue",
+  "vite",
+  "srvx",
+  "srvx/node",
+  "srvx/bun",
+  "srvx/deno",
+  "srvx/cloudflare",
+  "srvx/service-worker",
+  "@vitejs/plugin-vue",
+  "@vitejs/plugin-vue-jsx",
+  "@vue/server-renderer",
+];
+
+function adapterPack(cwd: string, name: string): PackUserConfig {
+  return {
+    clean: true,
+    deps: {
+      neverBundle: ["@vue-server/core"],
+    },
+    dts: {
+      oxc: true,
+    },
+    entry: {
+      index: `${cwd}/src/index.ts`,
+    },
+    format: ["esm"],
+    name,
+    outDir: `${cwd}/dist`,
+    sourcemap: true,
+    tsconfig: `${cwd}/tsconfig.json`,
+  };
+}
+
+export default defineConfig({
+  lint: {
+    options: {
+      typeAware: true,
+      typeCheck: true,
+    },
+  },
+  pack: [
+    {
+      clean: true,
+      deps: {
+        neverBundle: coreNeverBundle,
+      },
+      dts: {
+        oxc: true,
+      },
+      entry: {
+        index: "packages/core/src/index.ts",
+        vite: "packages/core/src/vite.ts",
+        runtime: "packages/core/src/runtime.ts",
+        client: "packages/core/src/client.ts",
+        "adapters/node": "packages/core/src/adapters/node.ts",
+        "adapters/bun": "packages/core/src/adapters/bun.ts",
+        "adapters/deno": "packages/core/src/adapters/deno.ts",
+        "adapters/cloudflare": "packages/core/src/adapters/cloudflare.ts",
+        "adapters/service-worker": "packages/core/src/adapters/service-worker.ts",
+      },
+      format: ["esm"],
+      name: "@vue-server/core",
+      outDir: "packages/core/dist",
+      sourcemap: true,
+      tsconfig: "packages/core/tsconfig.json",
+    },
+    adapterPack("packages/node", "@vue-server/node"),
+    adapterPack("packages/bun", "@vue-server/bun"),
+    adapterPack("packages/deno", "@vue-server/deno"),
+    adapterPack("packages/cloudflare", "@vue-server/cloudflare"),
+    adapterPack("packages/service-worker", "@vue-server/service-worker"),
+  ],
+});
