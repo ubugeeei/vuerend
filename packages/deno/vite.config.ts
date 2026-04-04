@@ -4,7 +4,7 @@ export default defineConfig({
   pack: {
     clean: true,
     deps: {
-      neverBundle: ["@vue-server/core/adapters/deno"],
+      neverBundle: ["@vuerend/core/adapters/deno"],
     },
     dts: {
       oxc: true,

@@ -4,7 +4,7 @@ export default defineConfig({
   pack: {
     clean: true,
     deps: {
-      neverBundle: ["@vue-server/core/adapters/service-worker"],
+      neverBundle: ["@vuerend/core/adapters/service-worker"],
     },
     dts: {
       oxc: true,

@@ -5,7 +5,7 @@ import type { ResolvedConfig } from "vite";
 import type { ClientBuildAssets } from "../runtime/types.js";
 import { MANIFEST_FILE } from "./constants.js";
 import { dirname, joinBase, toPrerenderPath } from "./helpers.js";
-import type { ResolvedVueServerPluginOptions } from "./types.js";
+import type { ResolvedVuerendPluginOptions } from "./types.js";
 
 export async function loadClientAssets(
   config: ResolvedConfig,
@@ -28,7 +28,7 @@ export async function loadClientAssets(
 
 export async function prerenderStaticRoutes(
   config: ResolvedConfig,
-  options: ResolvedVueServerPluginOptions,
+  options: ResolvedVuerendPluginOptions,
 ): Promise<void> {
   const serverEntry = join(config.root, options.serverOutDir, "index.js");
   const runtime = await import(`${pathToFileURL(serverEntry).href}?t=${Date.now()}`);
@@ -39,7 +39,7 @@ export async function prerenderStaticRoutes(
   }
 
   for (const route of routes) {
-    const response = await runtime.fetch(new Request(`https://vue-server.local${route}`));
+    const response = await runtime.fetch(new Request(`https://vuerend.local${route}`));
 
     if (!response.ok) {
       continue;

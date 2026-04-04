@@ -1,9 +1,9 @@
 import { serve } from "srvx/node";
-import type { VueServerRequestHandler } from "../runtime/types.js";
+import type { VuerendRequestHandler } from "../runtime/types.js";
 
-/** Mounts a Vue Server request handler on the `srvx/node` server runtime. */
+/** Mounts a Vuerend request handler on the `srvx/node` server runtime. */
 export function serveNode(
-  handler: VueServerRequestHandler,
+  handler: VuerendRequestHandler,
   options: Omit<Parameters<typeof serve>[0], "fetch"> = {},
 ): ReturnType<typeof serve> {
   return serve({

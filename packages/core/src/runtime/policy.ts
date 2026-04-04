@@ -91,7 +91,7 @@ export function createCacheEntry(
 /** Reconstructs an HTTP response from a cached HTML entry. */
 export function responseFromCache(entry: RenderCacheEntry, status: "HIT" | "STALE"): Response {
   const headers = new Headers(entry.headers);
-  headers.set("x-vue-server-cache", status);
+  headers.set("x-vuerend-cache", status);
 
   return new Response(entry.body, {
     status: entry.status,

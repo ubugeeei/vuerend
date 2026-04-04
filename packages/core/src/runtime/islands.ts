@@ -20,7 +20,7 @@ import type {
   SerializableComponentProps,
 } from "./types.js";
 
-const RENDER_STATE_KEY: InjectionKey<IslandRenderState> = Symbol("vue-server:render-state");
+const RENDER_STATE_KEY: InjectionKey<IslandRenderState> = Symbol("vuerend:render-state");
 
 /**
  * Marks a component as an explicit island boundary.
@@ -51,7 +51,7 @@ export function defineIsland(
   });
 
   const island = defineComponent({
-    name: `VueServerIsland(${id})`,
+    name: `VuerendIsland(${id})`,
     inheritAttrs: false,
     setup(props, { attrs, slots }) {
       return () => {
@@ -96,7 +96,7 @@ export function defineIsland(
     },
   }) as unknown as AnyDefinedIsland;
 
-  island.__vueServerIsland = definition;
+  island.__vuerendIsland = definition;
   return island;
 }
 
@@ -111,7 +111,7 @@ export function defineIslands<const Islands extends readonly AnyDefinedIsland[]>
 export function getIslandDefinition<TComponent extends Component = Component>(
   island: unknown,
 ): IslandDefinition<TComponent> | undefined {
-  return (island as AnyDefinedIsland | undefined)?.__vueServerIsland as
+  return (island as AnyDefinedIsland | undefined)?.__vuerendIsland as
     | IslandDefinition<TComponent>
     | undefined;
 }
@@ -152,7 +152,7 @@ export function createRenderRoot(
   state: IslandRenderState,
 ): ReturnType<typeof defineComponent> {
   return defineComponent({
-    name: "VueServerRoot",
+    name: "VuerendRoot",
     setup() {
       provide(RENDER_STATE_KEY, state);
       return () => h(component as never, props as never);

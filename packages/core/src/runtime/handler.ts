@@ -14,8 +14,8 @@ import type {
   DocumentConfig,
   CreateRequestHandlerOptions,
   RequestHandlerContext,
-  VueServerApp,
-  VueServerRequestHandler,
+  VuerendApp,
+  VuerendRequestHandler,
 } from "./types.js";
 
 /**
@@ -26,19 +26,19 @@ import type {
 export function defineApp<const Routes extends readonly AnyRouteDefinition[]>(app: {
   routes: Routes;
   document?: DocumentConfig;
-}): VueServerApp<Routes> {
+}): VuerendApp<Routes> {
   return app;
 }
 
 /**
- * Creates a fetch-compatible request handler for a Vue Server application.
+ * Creates a fetch-compatible request handler for a Vuerend application.
  *
  * The handler performs explicit route matching, server rendering, and optional
  * HTML caching when a route opts into it.
  */
 export function createRequestHandler(
   options: CreateRequestHandlerOptions,
-): VueServerRequestHandler {
+): VuerendRequestHandler {
   const routes = compileRoutes(options.app.routes);
   const cache = options.cache ?? createMemoryRenderCache();
   const pendingRevalidations = new Map<string, Promise<Response>>();
@@ -147,8 +147,8 @@ export function createRequestHandler(
  * SSG routes contribute their own path, and dynamic routes may return an
  * explicit `prerender` list.
  */
-export async function collectPrerenderRoutes(app: VueServerApp): Promise<string[]> {
-  const baseUrl = new URL("https://vue-server.local/");
+export async function collectPrerenderRoutes(app: VuerendApp): Promise<string[]> {
+  const baseUrl = new URL("https://vuerend.local/");
   const routes: string[] = [];
 
   for (const route of app.routes) {

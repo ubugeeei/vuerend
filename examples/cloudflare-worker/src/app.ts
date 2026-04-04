@@ -1,5 +1,5 @@
 import WorkerPage from "./pages/WorkerPage";
-import { defineApp, defineRoute } from "@vue-server/core";
+import { defineApp, defineRoute } from "@vuerend/core";
 
 export default defineApp({
   routes: [

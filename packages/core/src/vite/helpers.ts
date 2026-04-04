@@ -6,7 +6,7 @@ export function shouldHandleRequest(url: string | undefined): boolean {
     return false;
   }
 
-  const pathname = new URL(url, "http://vue-server.local").pathname;
+  const pathname = new URL(url, "http://vuerend.local").pathname;
 
   if (
     pathname.startsWith("/@") ||

@@ -1,6 +1,6 @@
 import app from "./app";
-import { createRequestHandler } from "@vue-server/core";
-import { serveCloudflare } from "@vue-server/cloudflare";
+import { createRequestHandler } from "@vuerend/core";
+import { serveCloudflare } from "@vuerend/cloudflare";
 
 const handler = createRequestHandler({ app });
 

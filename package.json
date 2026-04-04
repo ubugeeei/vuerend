@@ -1,5 +1,5 @@
 {
-  "name": "vue-server-monorepo",
+  "name": "vuerend-monorepo",
   "private": true,
   "workspaces": [
     "packages/*",

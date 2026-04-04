@@ -1,2 +1,2 @@
-/** Node adapter for mounting a Vue Server request handler with `srvx`. */
-export { serveNode } from "@vue-server/core/adapters/node";
+/** Node adapter for mounting a Vuerend request handler with `srvx`. */
+export { serveNode } from "@vuerend/core/adapters/node";

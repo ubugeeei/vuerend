@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@vue-server/core": "workspace:*",
-    "@vue-server/node": "workspace:*",
+    "@vuerend/core": "workspace:*",
+    "@vuerend/node": "workspace:*",
     "srvx": "^0.11.14",
     "vite": "^8.0.3",
     "vue": "^3.5.31"

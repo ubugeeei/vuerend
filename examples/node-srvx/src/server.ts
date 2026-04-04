@@ -1,6 +1,6 @@
 import app from "./app";
-import { createRequestHandler } from "@vue-server/core";
-import { serveNode } from "@vue-server/node";
+import { createRequestHandler } from "@vuerend/core";
+import { serveNode } from "@vuerend/node";
 
 const handler = createRequestHandler({ app });
 

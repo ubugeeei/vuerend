@@ -1,6 +1,6 @@
 import HomePage from "./pages/HomePage.vue";
 import LibraryPage from "./pages/LibraryPage";
-import { defineApp, defineRoute } from "@vue-server/core";
+import { defineApp, defineRoute } from "@vuerend/core";
 
 export default defineApp({
   routes: [

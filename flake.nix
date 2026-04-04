@@ -1,5 +1,5 @@
 {
-  description = "Vue Server development shell";
+  description = "Vuerend development shell";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";

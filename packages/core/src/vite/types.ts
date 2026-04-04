@@ -2,11 +2,11 @@ import type vue from "@vitejs/plugin-vue";
 import type vueJsx from "@vitejs/plugin-vue-jsx";
 
 /**
- * Options for the Vue Server Vite plugin.
+ * Options for the Vuerend Vite plugin.
  *
  * `app` is required and must point to the explicit app entry module.
  */
-export interface VueServerPluginOptions {
+export interface VuerendPluginOptions {
   app: string;
   /** Optional islands registry. Omit this for server-only apps that return no client JS. */
   islands?: string;
@@ -18,7 +18,7 @@ export interface VueServerPluginOptions {
   jsx?: Parameters<typeof vueJsx>[0];
 }
 
-export interface ResolvedVueServerPluginOptions {
+export interface ResolvedVuerendPluginOptions {
   app: string;
   islands?: string | undefined;
   clientOutDir: string;

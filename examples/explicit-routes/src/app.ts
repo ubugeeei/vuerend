@@ -1,11 +1,11 @@
 import AboutPage from "./pages/AboutPage.vue";
 import HomePage from "./pages/HomePage";
-import { defineApp, defineRoute } from "@vue-server/core";
+import { defineApp, defineRoute } from "@vuerend/core";
 
 export default defineApp({
   document: {
     title: "Explicit Routes",
-    titleTemplate: "%s | Vue Server",
+    titleTemplate: "%s | Vuerend",
   },
   routes: [
     defineRoute({

@@ -15,20 +15,20 @@ import type { ClientBuildAssets } from "../runtime/types.js";
 import { loadClientAssets, prerenderStaticRoutes } from "./build.js";
 import { DEV_CLIENT_ENTRY_URL } from "./constants.js";
 import { joinBase, shouldHandleRequest } from "./helpers.js";
-import type { ResolvedVueServerPluginOptions, VueServerPluginOptions } from "./types.js";
+import type { ResolvedVuerendPluginOptions, VuerendPluginOptions } from "./types.js";
 import { loadVirtualModule, resolveVirtualId } from "./virtual.js";
 
 /**
- * Installs the Vue Server Vite plugin.
+ * Installs the Vuerend Vite plugin.
  *
  * The plugin builds a client island entry and a fetch-first server entry using
  * the Vite v8 Environment API.
  */
-export function vueServer(options: VueServerPluginOptions): PluginOption[] {
+export function vuerend(options: VuerendPluginOptions): PluginOption[] {
   const state: {
     clientAssets: ClientBuildAssets;
     config: ResolvedConfig | undefined;
-    options: ResolvedVueServerPluginOptions;
+    options: ResolvedVuerendPluginOptions;
   } = {
     clientAssets: { entry: DEV_CLIENT_ENTRY_URL, css: [] as string[] },
     config: undefined,
@@ -41,7 +41,7 @@ export function vueServer(options: VueServerPluginOptions): PluginOption[] {
   };
 
   const plugin: Plugin = {
-    name: "vue-server",
+    name: "vuerend",
     config(userConfig) {
       const root = userConfig.root ?? process.cwd();
       state.options.app = normalizePath(resolve(root, options.app));
@@ -65,7 +65,7 @@ export function vueServer(options: VueServerPluginOptions): PluginOption[] {
               sourcemap: true,
               rolldownOptions: {
                 input: {
-                  "vue-server-client": "virtual:vue-server/client-entry",
+                  "vuerend-client": "virtual:vuerend/client-entry",
                 },
               },
             },
@@ -86,7 +86,7 @@ export function vueServer(options: VueServerPluginOptions): PluginOption[] {
               ssr: true,
               rolldownOptions: {
                 input: {
-                  server: "virtual:vue-server/server-entry",
+                  server: "virtual:vuerend/server-entry",
                 },
                 output: {
                   entryFileNames: "index.js",
@@ -107,7 +107,7 @@ export function vueServer(options: VueServerPluginOptions): PluginOption[] {
         keepProcessEnv: true,
         resolve: {
           ...environment.resolve,
-          conditions: ["vue-server", "workerd", "worker", ...defaultServerConditions],
+          conditions: ["vuerend", "workerd", "worker", ...defaultServerConditions],
         },
         build: {
           ...environment.build,
@@ -135,12 +135,12 @@ export function vueServer(options: VueServerPluginOptions): PluginOption[] {
           const environment = server.environments.server;
 
           if (!environment || !isRunnableDevEnvironment(environment)) {
-            next(new TypeError("vue-server requires a runnable server environment."));
+            next(new TypeError("vuerend requires a runnable server environment."));
             return;
           }
 
           try {
-            const runtime = await environment.runner.import("virtual:vue-server/server-entry");
+            const runtime = await environment.runner.import("virtual:vuerend/server-entry");
             const request = new NodeRequest({ req, res });
             const response = await runtime.fetch(request);
             await sendNodeResponse(res, response);

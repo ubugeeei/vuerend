@@ -4,7 +4,7 @@ export default defineConfig({
   pack: {
     clean: true,
     deps: {
-      neverBundle: ["@vue-server/core/adapters/cloudflare"],
+      neverBundle: ["@vuerend/core/adapters/cloudflare"],
     },
     dts: {
       oxc: true,

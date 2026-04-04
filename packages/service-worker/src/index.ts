@@ -1,2 +1,2 @@
-/** Service worker adapter for mounting a Vue Server request handler with `srvx`. */
-export { serveServiceWorker } from "@vue-server/core/adapters/service-worker";
+/** Service worker adapter for mounting a Vuerend request handler with `srvx`. */
+export { serveServiceWorker } from "@vuerend/core/adapters/service-worker";

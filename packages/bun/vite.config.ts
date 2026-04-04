@@ -4,7 +4,7 @@ export default defineConfig({
   pack: {
     clean: true,
     deps: {
-      neverBundle: ["@vue-server/core/adapters/bun"],
+      neverBundle: ["@vuerend/core/adapters/bun"],
     },
     dts: {
       oxc: true,

@@ -1,4 +1,4 @@
-/** Vite plugin entrypoint for Vue Server. */
-export { vueServer } from "./vite/plugin.js";
-/** Public options accepted by the Vue Server Vite plugin. */
-export type { VueServerPluginOptions } from "./vite/types.js";
+/** Vite plugin entrypoint for Vuerend. */
+export { vuerend } from "./vite/plugin.js";
+/** Public options accepted by the Vuerend Vite plugin. */
+export type { VuerendPluginOptions } from "./vite/types.js";

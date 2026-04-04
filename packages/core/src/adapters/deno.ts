@@ -1,9 +1,9 @@
 import { serve } from "srvx/deno";
-import type { VueServerRequestHandler } from "../runtime/types.js";
+import type { VuerendRequestHandler } from "../runtime/types.js";
 
-/** Mounts a Vue Server request handler on the `srvx/deno` runtime. */
+/** Mounts a Vuerend request handler on the `srvx/deno` runtime. */
 export function serveDeno(
-  handler: VueServerRequestHandler,
+  handler: VuerendRequestHandler,
   options: Omit<Parameters<typeof serve>[0], "fetch"> = {},
 ): ReturnType<typeof serve> {
   return serve({

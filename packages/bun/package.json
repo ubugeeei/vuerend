@@ -1,5 +1,5 @@
 {
-  "name": "@vue-server/bun",
+  "name": "@vuerend/bun",
   "version": "0.1.0",
   "license": "MIT",
   "files": [
@@ -14,7 +14,7 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@vue-server/core": "workspace:*"
+    "@vuerend/core": "workspace:*"
   },
   "peerDependencies": {
     "vite": "^8.0.3",

@@ -15,7 +15,7 @@ describe("islands", () => {
         routes: [defineRoute({ path: "/", component: HomePage })],
       }),
       assets: {
-        entry: "/assets/vue-server-client.js",
+        entry: "/assets/vuerend-client.js",
       },
     });
 
@@ -23,7 +23,7 @@ describe("islands", () => {
     const html = await response.text();
 
     expect(html).toContain("server only");
-    expect(html).not.toContain("/assets/vue-server-client.js");
+    expect(html).not.toContain("/assets/vuerend-client.js");
   });
 
   it("renders explicit island boundaries and injects the client entry", async () => {
@@ -56,7 +56,7 @@ describe("islands", () => {
         routes: [defineRoute({ path: "/", component: HomePage })],
       }),
       assets: {
-        entry: "/assets/vue-server-client.js",
+        entry: "/assets/vuerend-client.js",
       },
     });
 
@@ -66,7 +66,7 @@ describe("islands", () => {
     expect(html).toContain('data-vs-component="counter"');
     expect(html).toContain('data-vs-hydrate="visible"');
     expect(html).toContain("count:2");
-    expect(html).toContain("/assets/vue-server-client.js");
+    expect(html).toContain("/assets/vuerend-client.js");
   });
 
   it("rejects using an island as the route component", async () => {

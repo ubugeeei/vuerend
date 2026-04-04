@@ -8,7 +8,7 @@ import {
   VIRTUAL_CLIENT_ENTRY,
   VIRTUAL_SERVER_ENTRY,
 } from "./constants.js";
-import type { ResolvedVueServerPluginOptions } from "./types.js";
+import type { ResolvedVuerendPluginOptions } from "./types.js";
 
 export function resolveVirtualId(id: string): string | undefined {
   if (id === VIRTUAL_CLIENT_ENTRY) {
@@ -28,7 +28,7 @@ export function resolveVirtualId(id: string): string | undefined {
 
 export function loadVirtualModule(
   id: string,
-  options: ResolvedVueServerPluginOptions,
+  options: ResolvedVuerendPluginOptions,
   clientAssets: ClientBuildAssets,
 ): string | null {
   if (id === RESOLVED_CLIENT_ENTRY) {

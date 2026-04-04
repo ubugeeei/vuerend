@@ -1,15 +1,15 @@
-# Vue Server Monorepo
+# Vuerend Monorepo
 
-This repository is a monorepo for the `@vue-server/*` packages. The workspace root contains the core package, thin runtime adapters, and runnable examples. Route components are server components by default, so pages return no client JavaScript unless they render explicit islands.
+This repository is a monorepo for the `@vuerend/*` packages. The workspace root contains the core package, thin runtime adapters, and runnable examples. Route components are server components by default, so pages return no client JavaScript unless they render explicit islands.
 
 ## Layout
 
-- `packages/core`: `@vue-server/core`
-- `packages/node`: `@vue-server/node`
-- `packages/bun`: `@vue-server/bun`
-- `packages/deno`: `@vue-server/deno`
-- `packages/cloudflare`: `@vue-server/cloudflare`
-- `packages/service-worker`: `@vue-server/service-worker`
+- `packages/core`: `@vuerend/core`
+- `packages/node`: `@vuerend/node`
+- `packages/bun`: `@vuerend/bun`
+- `packages/deno`: `@vuerend/deno`
+- `packages/cloudflare`: `@vuerend/cloudflare`
+- `packages/service-worker`: `@vuerend/service-worker`
 - `examples/explicit-routes`: minimal explicit-routing app
 - `examples/secure-islands`: secure island boundaries with targeted hydration
 - `examples/isr-cache`: opt-in cache, ISR, and prerendering

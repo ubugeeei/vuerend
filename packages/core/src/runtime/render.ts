@@ -9,7 +9,7 @@ import type {
   RequestHandlerContext,
   RouteContext,
   RouteHead,
-  VueServerApp,
+  VuerendApp,
 } from "./types.js";
 
 /** The result of rendering a single matched route. */
@@ -25,7 +25,7 @@ export interface RenderedRouteResponse {
  * This is the core server-rendering step used by the request handler.
  */
 export async function renderRouteResponse(
-  app: VueServerApp,
+  app: VuerendApp,
   route: AnyRouteDefinition,
   routeContext: RouteContext,
   options: CreateRequestHandlerOptions,
@@ -95,11 +95,11 @@ function createHtmlHeaders(
   headers.set("content-type", "text/html; charset=utf-8");
 
   if (head?.title) {
-    headers.set("x-vue-server-title", head.title);
+    headers.set("x-vuerend-title", head.title);
   }
 
   if (islands.length > 0) {
-    headers.set("x-vue-server-islands", String(islands.length));
+    headers.set("x-vuerend-islands", String(islands.length));
   }
 
   return headers;

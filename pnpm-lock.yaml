@@ -29,10 +29,10 @@ importers:
 
   examples/cloudflare-worker:
     dependencies:
-      '@vue-server/cloudflare':
+      '@vuerend/cloudflare':
         specifier: workspace:*
         version: link:../../packages/cloudflare
-      '@vue-server/core':
+      '@vuerend/core':
         specifier: workspace:*
         version: link:../../packages/core
       srvx:
@@ -47,7 +47,7 @@ importers:
 
   examples/explicit-routes:
     dependencies:
-      '@vue-server/core':
+      '@vuerend/core':
         specifier: workspace:*
         version: link:../../packages/core
       vite:
@@ -59,7 +59,7 @@ importers:
 
   examples/isr-cache:
     dependencies:
-      '@vue-server/core':
+      '@vuerend/core':
         specifier: workspace:*
         version: link:../../packages/core
       vite:
@@ -71,7 +71,7 @@ importers:
 
   examples/mixed-sfc-jsx:
     dependencies:
-      '@vue-server/core':
+      '@vuerend/core':
         specifier: workspace:*
         version: link:../../packages/core
       vite:
@@ -83,10 +83,10 @@ importers:
 
   examples/node-srvx:
     dependencies:
-      '@vue-server/core':
+      '@vuerend/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@vue-server/node':
+      '@vuerend/node':
         specifier: workspace:*
         version: link:../../packages/node
       srvx:
@@ -101,7 +101,7 @@ importers:
 
   examples/secure-islands:
     dependencies:
-      '@vue-server/core':
+      '@vuerend/core':
         specifier: workspace:*
         version: link:../../packages/core
       vite:
@@ -113,7 +113,7 @@ importers:
 
   packages/bun:
     dependencies:
-      '@vue-server/core':
+      '@vuerend/core':
         specifier: workspace:*
         version: link:../core
       vite:
@@ -125,7 +125,7 @@ importers:
 
   packages/cloudflare:
     dependencies:
-      '@vue-server/core':
+      '@vuerend/core':
         specifier: workspace:*
         version: link:../core
       vite:
@@ -158,7 +158,7 @@ importers:
 
   packages/deno:
     dependencies:
-      '@vue-server/core':
+      '@vuerend/core':
         specifier: workspace:*
         version: link:../core
       vite:
@@ -170,7 +170,7 @@ importers:
 
   packages/node:
     dependencies:
-      '@vue-server/core':
+      '@vuerend/core':
         specifier: workspace:*
         version: link:../core
       vite:
@@ -182,7 +182,7 @@ importers:
 
   packages/service-worker:
     dependencies:
-      '@vue-server/core':
+      '@vuerend/core':
         specifier: workspace:*
         version: link:../core
       vite:

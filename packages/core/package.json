@@ -1,5 +1,5 @@
 {
-  "name": "@vue-server/core",
+  "name": "@vuerend/core",
   "version": "0.1.0",
   "description": "Lightweight Vue server renderer and Vite v8 plugin with explicit routing and secure islands.",
   "license": "MIT",

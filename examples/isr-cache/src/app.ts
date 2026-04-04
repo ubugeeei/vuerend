@@ -1,6 +1,6 @@
 import LandingPage from "./pages/LandingPage";
 import PostPage from "./pages/PostPage";
-import { defineApp, defineRoute } from "@vue-server/core";
+import { defineApp, defineRoute } from "@vuerend/core";
 
 export default defineApp({
   routes: [

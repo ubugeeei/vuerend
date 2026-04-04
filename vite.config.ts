@@ -19,7 +19,7 @@ function adapterPack(cwd: string, name: string): PackUserConfig {
   return {
     clean: true,
     deps: {
-      neverBundle: ["@vue-server/core"],
+      neverBundle: ["@vuerend/core"],
     },
     dts: {
       oxc: true,
@@ -63,15 +63,15 @@ export default defineConfig({
         "adapters/service-worker": "packages/core/src/adapters/service-worker.ts",
       },
       format: ["esm"],
-      name: "@vue-server/core",
+      name: "@vuerend/core",
       outDir: "packages/core/dist",
       sourcemap: true,
       tsconfig: "packages/core/tsconfig.json",
     },
-    adapterPack("packages/node", "@vue-server/node"),
-    adapterPack("packages/bun", "@vue-server/bun"),
-    adapterPack("packages/deno", "@vue-server/deno"),
-    adapterPack("packages/cloudflare", "@vue-server/cloudflare"),
-    adapterPack("packages/service-worker", "@vue-server/service-worker"),
+    adapterPack("packages/node", "@vuerend/node"),
+    adapterPack("packages/bun", "@vuerend/bun"),
+    adapterPack("packages/deno", "@vuerend/deno"),
+    adapterPack("packages/cloudflare", "@vuerend/cloudflare"),
+    adapterPack("packages/service-worker", "@vuerend/service-worker"),
   ],
 });

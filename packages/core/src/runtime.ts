@@ -42,6 +42,6 @@ export type {
   RouteRenderOptions,
   SerializableComponentProps,
   ServerComponent,
-  VueServerApp,
-  VueServerRequestHandler,
+  VuerendApp,
+  VuerendRequestHandler,
 } from "./runtime/types.js";

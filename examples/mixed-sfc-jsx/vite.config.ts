@@ -1,15 +1,15 @@
 import { defineConfig } from "vite";
-import { vueServer } from "../../packages/core/src/vite";
-import { vueServerAliases } from "../shared/vue-server-alias";
+import { vuerend } from "../../packages/core/src/vite";
+import { vuerendAliases } from "../shared/vuerend-alias";
 
 export default defineConfig({
   plugins: [
-    vueServer({
+    vuerend({
       app: "./src/app.ts",
       islands: "./src/islands.ts",
     }),
   ],
   resolve: {
-    alias: vueServerAliases(),
+    alias: vuerendAliases(),
   },
 });

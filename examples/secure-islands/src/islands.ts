@@ -1,6 +1,6 @@
 import CounterView from "./components/CounterView";
 import SignupPrompt from "./components/SignupPrompt.vue";
-import { defineIsland, defineIslands } from "@vue-server/core";
+import { defineIsland, defineIslands } from "@vuerend/core";
 
 export const CounterIsland = defineIsland("counter-island", {
   component: CounterView,

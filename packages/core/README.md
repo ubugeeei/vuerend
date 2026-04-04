@@ -1,4 +1,4 @@
-# @vue-server/core
+# @vuerend/core
 
 Lightweight Vue server renderer and Vite v8 plugin built around explicit routes, zero-JS-by-default rendering, explicit secure islands, and opt-in runtime caching.
 
@@ -31,11 +31,11 @@ vp pack
 ```ts
 // vite.config.ts
 import { defineConfig } from "vite";
-import { vueServer } from "@vue-server/core/vite";
+import { vuerend } from "@vuerend/core/vite";
 
 export default defineConfig({
   plugins: [
-    vueServer({
+    vuerend({
       app: "./src/app.ts",
       islands: "./src/islands.ts",
     }),
@@ -48,7 +48,7 @@ The `islands` option is optional. Leave it out when the app is pure server compo
 ```ts
 // src/app.ts
 import HomePage from "./pages/HomePage";
-import { defineApp, defineRoute } from "@vue-server/core";
+import { defineApp, defineRoute } from "@vuerend/core";
 
 export default defineApp({
   routes: [
@@ -64,7 +64,7 @@ export default defineApp({
 ```ts
 // src/islands.ts
 import CounterView from "./components/CounterView";
-import { defineIsland, defineIslands } from "@vue-server/core";
+import { defineIsland, defineIslands } from "@vuerend/core";
 
 export const CounterIsland = defineIsland("counter", {
   component: CounterView,
@@ -112,7 +112,7 @@ defineRoute({
 ## Runtime Targets
 
 - `createRequestHandler()` returns a fetch-compatible handler.
-- Use `@vue-server/node`, `@vue-server/bun`, `@vue-server/deno`, `@vue-server/cloudflare`, and `@vue-server/service-worker` for thin runtime adapters.
+- Use `@vuerend/node`, `@vuerend/bun`, `@vuerend/deno`, `@vuerend/cloudflare`, and `@vuerend/service-worker` for thin runtime adapters.
 - The server build outputs a fetch handler in `dist/server/index.js` and prerendered/static assets in `dist/client`.
 
 ## Examples

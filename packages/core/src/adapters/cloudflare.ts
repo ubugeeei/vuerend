@@ -1,9 +1,9 @@
 import { serve } from "srvx/cloudflare";
-import type { VueServerRequestHandler } from "../runtime/types.js";
+import type { VuerendRequestHandler } from "../runtime/types.js";
 
-/** Mounts a Vue Server request handler on the `srvx/cloudflare` runtime. */
+/** Mounts a Vuerend request handler on the `srvx/cloudflare` runtime. */
 export function serveCloudflare(
-  handler: VueServerRequestHandler,
+  handler: VuerendRequestHandler,
   options: Omit<Parameters<typeof serve>[0], "fetch"> = {},
 ): ReturnType<typeof serve> {
   return serve({

@@ -130,7 +130,7 @@ export interface DocumentConfig extends RouteHead {
 }
 
 /** The full application description consumed by the runtime and build plugin. */
-export interface VueServerApp<
+export interface VuerendApp<
   Routes extends readonly AnyRouteDefinition[] = readonly AnyRouteDefinition[],
 > {
   routes: Routes;
@@ -162,17 +162,17 @@ export interface IslandDefinition<TComponent extends Component = Component> {
   ssr: boolean;
 }
 
-/** A Vue component branded as a Vue Server island. */
+/** A Vue component branded as a Vuerend island. */
 export type DefinedIsland<
   Props extends JsonObject = JsonObject,
   TComponent extends Component = DefineComponent<Props>,
 > = DefineComponent<Props> & {
-  __vueServerIsland: IslandDefinition<TComponent> | undefined;
+  __vuerendIsland: IslandDefinition<TComponent> | undefined;
 };
 
 /** A defined island with its prop and component types erased. */
 export type AnyDefinedIsland = Component & {
-  __vueServerIsland: IslandDefinition | undefined;
+  __vuerendIsland: IslandDefinition | undefined;
 };
 
 /** An island instance collected during server rendering. */
@@ -215,9 +215,9 @@ export interface RenderCache {
   revalidateTag(tag: string): Awaitable<void>;
 }
 
-/** Options used to build a fetch-compatible Vue Server handler. */
+/** Options used to build a fetch-compatible Vuerend handler. */
 export interface CreateRequestHandlerOptions {
-  app: VueServerApp;
+  app: VuerendApp;
   assets?: ClientBuildAssets;
   cache?: RenderCache;
 }
@@ -234,7 +234,7 @@ export interface RequestHandlerContext {
  *
  * The callable function is accompanied by cache and prerender helpers.
  */
-export interface VueServerRequestHandler {
+export interface VuerendRequestHandler {
   (request: Request, context?: RequestHandlerContext): Promise<Response>;
   cache: RenderCache;
   listPrerenderRoutes(): Promise<string[]>;
