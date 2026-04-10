@@ -1,15 +1,6 @@
-import { defineConfig } from "vite";
-import { vuerend } from "../../packages/core/src/vite";
-import { vuerendAliases } from "../shared/vuerend-alias";
+import { createExampleViteConfig } from "../shared/create-vite-config";
 
-export default defineConfig({
-  plugins: [
-    vuerend({
-      app: "./src/app.ts",
-      islands: "./src/islands.ts",
-    }),
-  ],
-  resolve: {
-    alias: vuerendAliases(),
-  },
+export default createExampleViteConfig({
+  app: "./src/app.ts",
+  islands: "./src/islands.ts",
 });

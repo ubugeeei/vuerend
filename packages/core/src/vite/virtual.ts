@@ -45,10 +45,15 @@ export function loadVirtualModule(
 
   if (id === RESOLVED_SERVER_ENTRY) {
     return [
-      `import app from ${JSON.stringify(options.app)};`,
       `import assets from ${JSON.stringify(VIRTUAL_CLIENT_BUILD)};`,
       `import { createRequestHandler } from ${JSON.stringify(`${PUBLIC_PACKAGE_NAME}/runtime`)};`,
-      "const handler = createRequestHandler({ app, assets });",
+      `const appModule = await import(${JSON.stringify(options.app)});`,
+      "const app = appModule.default;",
+      "const runtimeOptions =",
+      '  typeof appModule.requestHandlerOptions === "function"',
+      "    ? await appModule.requestHandlerOptions({ assets })",
+      "    : (appModule.requestHandlerOptions ?? {});",
+      "const handler = createRequestHandler({ app, assets, ...runtimeOptions });",
       "export const fetch = handler;",
       "export const cache = handler.cache;",
       "export const listPrerenderRoutes = () => handler.listPrerenderRoutes();",

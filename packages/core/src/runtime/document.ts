@@ -16,6 +16,16 @@ export interface RenderDocumentInput {
   assets?: ClientBuildAssets | undefined;
 }
 
+/** Input required to assemble an image-document string for Chromium screenshots. */
+export interface RenderImageDocumentInput {
+  appDocument?: DocumentConfig | undefined;
+  body: string;
+  head?: RouteHead | undefined;
+  width: number;
+  height: number;
+  baseUrl: URL;
+}
+
 /**
  * Renders the full HTML document around a route body.
  *
@@ -76,6 +86,64 @@ export function renderDocument(input: RenderDocumentInput): string {
     document?.bodyOpen ?? "",
     input.body,
     document?.bodyClose ?? "",
+    "</body>",
+    "</html>",
+  ].join("");
+}
+
+/**
+ * Renders a minimal HTML document for an image route.
+ *
+ * The resulting document is meant to be loaded by a Chromium-based renderer and
+ * captured as a PNG or JPEG.
+ */
+export function renderImageDocument(input: RenderImageDocumentInput): string {
+  const document = input.appDocument;
+  const head = input.head;
+  const lang = head?.lang ?? document?.lang ?? "en";
+  const htmlAttrs = renderAttributes({
+    lang,
+    ...document?.htmlAttrs,
+    ...head?.htmlAttrs,
+  });
+  const bodyAttrs = renderAttributes({
+    ...document?.bodyAttrs,
+    ...head?.bodyAttrs,
+  });
+  const meta = renderTagCollection(
+    "meta",
+    dedupeTagCollection<HeadMeta>([
+      { charset: "utf-8" },
+      { name: "viewport", content: `width=${input.width}, initial-scale=1` },
+      ...(document?.meta ?? []),
+      ...(head?.meta ?? []),
+    ]),
+  ).join("");
+  const links = renderTagCollection(
+    "link",
+    dedupeLinkCollection([
+      ...(document?.links ?? []),
+      ...createStylesheetLinks(document?.stylesheets),
+      ...(head?.links ?? []),
+      ...createStylesheetLinks(head?.stylesheets),
+    ]),
+  ).join("");
+
+  return [
+    "<!DOCTYPE html>",
+    `<html${htmlAttrs}>`,
+    "<head>",
+    meta,
+    `<base href="${escapeAttribute(resolveBaseHref(input.baseUrl))}">`,
+    document?.head ?? "",
+    head?.head ?? "",
+    `<style>${createImageViewportCss(input.width, input.height)}</style>`,
+    links,
+    "</head>",
+    `<body${bodyAttrs}>`,
+    '<div id="vuerend-og-root">',
+    input.body,
+    "</div>",
     "</body>",
     "</html>",
   ].join("");
@@ -227,4 +295,28 @@ function serializeAttributes(attributes: Record<string, string | undefined>): st
 
 function normalizeToken(value: string | undefined): string {
   return value?.trim().toLowerCase() ?? "";
+}
+
+function resolveBaseHref(url: URL): string {
+  return new URL(url.pathname, url.origin).href;
+}
+
+function createImageViewportCss(width: number, height: number): string {
+  return [
+    "html, body {",
+    "  margin: 0;",
+    "  padding: 0;",
+    "  overflow: hidden;",
+    `  width: ${width}px;`,
+    `  height: ${height}px;`,
+    "}",
+    "body {",
+    "  background: transparent;",
+    "}",
+    "#vuerend-og-root {",
+    `  width: ${width}px;`,
+    `  height: ${height}px;`,
+    "  overflow: hidden;",
+    "}",
+  ].join("");
 }

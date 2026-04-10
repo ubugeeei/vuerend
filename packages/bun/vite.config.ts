@@ -4,7 +4,7 @@ export default defineConfig({
   pack: {
     clean: true,
     deps: {
-      neverBundle: ["@vuerend/core/adapters/bun"],
+      neverBundle: ["@vuerend/core", "srvx/bun"],
     },
     dts: {
       oxc: true,

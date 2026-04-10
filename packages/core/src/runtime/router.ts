@@ -1,4 +1,4 @@
-import type { AnyRouteDefinition, RouteDefinition } from "./types.js";
+import type { AnyRouteDefinition, ImageRouteDefinition, RouteDefinition } from "./types.js";
 
 /** A compiled route pattern used by the runtime matcher. */
 export interface CompiledRoute {
@@ -29,6 +29,28 @@ export function defineRoute<
     ? InferredProps
     : never,
 >(route: RouteDefinition<Path, TComponent, Props>): RouteDefinition<Path, TComponent, Props> {
+  return route;
+}
+
+/**
+ * Declares a route that renders a binary image instead of an HTML document.
+ *
+ * Image routes still use normal Vue server components, so Vue SFC templates can
+ * be used for dynamic OG image layouts.
+ */
+export function defineImageRoute<
+  const Path extends string,
+  const TComponent extends RouteDefinition["component"],
+  Props = RouteDefinition<Path, TComponent> extends RouteDefinition<
+    Path,
+    TComponent,
+    infer InferredProps
+  >
+    ? InferredProps
+    : never,
+>(
+  route: ImageRouteDefinition<Path, TComponent, Props>,
+): ImageRouteDefinition<Path, TComponent, Props> {
   return route;
 }
 

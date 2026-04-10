@@ -8,7 +8,12 @@ export {
   getIslandDefinition,
   serializeIslandProps,
 } from "./runtime/islands.js";
-export { collectPrerenderRoutes, createRequestHandler, defineApp } from "./runtime/handler.js";
+export {
+  collectPrerenderRoutes,
+  createRequestHandler,
+  defineApp,
+  defineRequestHandlerOptions,
+} from "./runtime/handler.js";
 export {
   createCacheEntry,
   isCacheableRequest,
@@ -17,11 +22,22 @@ export {
   resolveTags,
   responseFromCache,
 } from "./runtime/policy.js";
-export { createRouteContext, renderRouteResponse } from "./runtime/render.js";
-export { createRouter, defineRoute, matchRoute, normalizePathname } from "./runtime/router.js";
+export {
+  createRouteContext,
+  renderImageRouteResponse,
+  renderRouteResponse,
+} from "./runtime/render.js";
+export {
+  createRouter,
+  defineImageRoute,
+  defineRoute,
+  matchRoute,
+  normalizePathname,
+} from "./runtime/router.js";
 export type {
   AnyDefinedIsland,
   AnyRouteDefinition,
+  BinaryBody,
   ClientBuildAssets,
   ComponentProps,
   CreateRequestHandlerOptions,
@@ -33,6 +49,10 @@ export type {
   HeadScript,
   HeadTagAttributes,
   HydrationStrategy,
+  HtmlImageRenderer,
+  HtmlImageRenderResult,
+  HtmlImageRendererInput,
+  ImageRouteDefinition,
   IslandDefinition,
   JsonObject,
   JsonValue,
@@ -41,11 +61,16 @@ export type {
   RenderCacheEntry,
   RequestMiddleware,
   RequestMiddlewareNext,
+  RequestHandlerOptionsContext,
+  RequestHandlerOptionsResolver,
+  RequestHandlerRuntimeOptions,
   RequestState,
   RequestHandlerContext,
   RouteContext,
   RouteDefinition,
   RouteHead,
+  RouteImageFormat,
+  RouteImageOptions,
   RouteHeadResolver,
   RouteParams,
   RouteRenderOptions,

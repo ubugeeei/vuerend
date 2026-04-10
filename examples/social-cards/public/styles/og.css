@@ -1,0 +1,84 @@
+.social-card {
+  width: 100%;
+  height: 100%;
+  padding: 44px;
+  background:
+    radial-gradient(circle at top right, rgba(255, 177, 117, 0.32), transparent 24%),
+    linear-gradient(140deg, #fff5ea 0%, #fff1f6 46%, #f3eafe 100%);
+  color: #24182d;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+}
+
+.social-frame {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.9fr);
+  gap: 28px;
+}
+
+.social-copy,
+.social-meta {
+  border: 1px solid rgba(36, 24, 45, 0.08);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 20px 60px rgba(68, 46, 63, 0.12);
+}
+
+.social-copy {
+  padding: 38px 40px;
+}
+
+.social-eyebrow {
+  margin: 0 0 16px;
+  color: #bb5a2d;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.social-title {
+  margin: 0;
+  font-size: 70px;
+  line-height: 0.94;
+  letter-spacing: -0.05em;
+}
+
+.social-description {
+  margin: 26px 0 0;
+  max-width: 17ch;
+  color: #5c4753;
+  font-size: 25px;
+  line-height: 1.35;
+}
+
+.social-meta {
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(180deg, rgba(36, 24, 45, 0.96) 0%, rgba(77, 53, 71, 0.98) 100%);
+  color: #fff8f4;
+}
+
+.social-badge {
+  align-self: flex-start;
+  padding: 8px 15px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.social-points {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 12px;
+  font-size: 21px;
+  line-height: 1.35;
+}

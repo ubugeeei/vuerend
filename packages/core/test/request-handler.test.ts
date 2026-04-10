@@ -1,6 +1,6 @@
 import { defineComponent, h } from "vue";
 import { describe, expect, it } from "vitest";
-import { createRequestHandler, defineApp, defineRoute } from "../src/runtime";
+import { createRequestHandler, defineApp, defineImageRoute, defineRoute } from "../src/runtime";
 
 describe("createRequestHandler", () => {
   it("renders explicit routes and passes route params into props", async () => {
@@ -220,5 +220,65 @@ describe("createRequestHandler", () => {
 
     expect(response.status).toBe(200);
     expect(html).toContain("rewritten");
+  });
+
+  it("renders image routes through the configured HTML image renderer", async () => {
+    const OgImagePage = defineComponent({
+      props: {
+        title: {
+          required: true,
+          type: String,
+        },
+      },
+      setup(props) {
+        return () => h("main", { class: "og-root" }, props.title);
+      },
+    });
+
+    const renders: string[] = [];
+    const handler = createRequestHandler({
+      app: defineApp({
+        routes: [
+          defineImageRoute({
+            path: "/og/example.png",
+            component: OgImagePage,
+            getProps() {
+              return {
+                title: "Dynamic OG",
+              };
+            },
+            head: {
+              title: "Dynamic OG",
+              stylesheets: ["/styles/og.css"],
+            },
+            image: {
+              width: 1200,
+              height: 630,
+            },
+          }),
+        ],
+      }),
+      imageRenderer: {
+        async render(input) {
+          renders.push(input.html);
+
+          return {
+            body: new Uint8Array([1, 2, 3, 4]),
+          };
+        },
+      },
+    });
+
+    const response = await handler(new Request("https://example.test/og/example.png"));
+    const body = new Uint8Array(await response.arrayBuffer());
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toBe("image/png");
+    expect(response.headers.get("x-vuerend-image-size")).toBe("1200x630");
+    expect(Array.from(body)).toEqual([1, 2, 3, 4]);
+    expect(renders).toHaveLength(1);
+    expect(renders[0]).toContain('<base href="https://example.test/og/example.png">');
+    expect(renders[0]).toContain("/styles/og.css");
+    expect(renders[0]).toContain("Dynamic OG");
   });
 });

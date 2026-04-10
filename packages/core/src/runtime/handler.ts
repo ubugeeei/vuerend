@@ -8,13 +8,15 @@ import {
   resolveTags,
   responseFromCache,
 } from "./policy.js";
-import { createRouteContext, renderRouteResponse } from "./render.js";
+import { createRouteContext, renderImageRouteResponse, renderRouteResponse } from "./render.js";
 import type {
   AnyRouteDefinition,
   CreateRequestHandlerOptions,
   MiddlewareContext,
   RequestMiddleware,
   RequestHandlerContext,
+  RequestHandlerOptionsResolver,
+  RequestHandlerRuntimeOptions,
   VuerendApp,
   VuerendRequestHandler,
 } from "./types.js";
@@ -24,9 +26,11 @@ import type {
  *
  * The returned object is consumed by both the runtime handler and the Vite plugin.
  */
-export function defineApp<const Routes extends readonly AnyRouteDefinition[]>(app: {
-  routes: Routes;
-} & VuerendApp<Routes>): VuerendApp<Routes> {
+export function defineApp<const Routes extends readonly AnyRouteDefinition[]>(
+  app: {
+    routes: Routes;
+  } & VuerendApp<Routes>,
+): VuerendApp<Routes> {
   return app;
 }
 
@@ -36,9 +40,7 @@ export function defineApp<const Routes extends readonly AnyRouteDefinition[]>(ap
  * The handler performs explicit route matching, server rendering, and optional
  * HTML caching when a route opts into it.
  */
-export function createRequestHandler(
-  options: CreateRequestHandlerOptions,
-): VuerendRequestHandler {
+export function createRequestHandler(options: CreateRequestHandlerOptions): VuerendRequestHandler {
   const routes = compileRoutes(options.app.routes);
   const middleware = options.app.middleware ?? [];
   const cache = options.cache ?? createMemoryRenderCache();
@@ -61,6 +63,17 @@ export function createRequestHandler(
     }
 
     const routeContext = createRouteContext(request, url, matched.params, context);
+
+    if (matched.definition.image) {
+      const rendered = await renderImageRouteResponse(
+        options.app,
+        matched.definition,
+        routeContext,
+        options,
+      );
+      return rendered.response;
+    }
+
     const renderOptions = normalizeRenderOptions(matched.definition.render);
     const cacheKey = await resolveCacheKey(matched.definition, routeContext);
 
@@ -151,6 +164,13 @@ export function createRequestHandler(
   });
 }
 
+/** Returns additional `createRequestHandler()` options without widening their types. */
+export function defineRequestHandlerOptions<
+  T extends RequestHandlerRuntimeOptions | RequestHandlerOptionsResolver,
+>(options: T): T {
+  return options;
+}
+
 /**
  * Collects the paths that should be prerendered at build time.
  *
@@ -206,24 +226,21 @@ function composeMiddleware(
   middleware: readonly RequestMiddleware[],
   handler: (request: Request, context: MiddlewareContext) => Promise<Response>,
 ): (request: Request, context: MiddlewareContext) => Promise<Response> {
-  return middleware.reduceRight<(request: Request, context: MiddlewareContext) => Promise<Response>>(
-    (next, current) => {
-      return async (request, context) => {
-        return current(request, context, (nextRequest = request, nextContext = context) => {
-          return next(
-            nextRequest,
-            nextContext === context ? context : normalizeRequestHandlerContext(nextContext),
-          );
-        });
-      };
-    },
-    handler,
-  );
+  return middleware.reduceRight<
+    (request: Request, context: MiddlewareContext) => Promise<Response>
+  >((next, current) => {
+    return async (request, context) => {
+      return current(request, context, (nextRequest = request, nextContext = context) => {
+        return next(
+          nextRequest,
+          nextContext === context ? context : normalizeRequestHandlerContext(nextContext),
+        );
+      });
+    };
+  }, handler);
 }
 
-function normalizeRequestHandlerContext(
-  context: RequestHandlerContext = {},
-): MiddlewareContext {
+function normalizeRequestHandlerContext(context: RequestHandlerContext = {}): MiddlewareContext {
   return {
     ...context,
     state: context.state ?? {},

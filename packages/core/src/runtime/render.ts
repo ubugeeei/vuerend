@@ -1,6 +1,6 @@
 import { renderToString } from "@vue/server-renderer";
 import { createSSRApp } from "vue";
-import { renderDocument } from "./document.js";
+import { renderDocument, renderImageDocument } from "./document.js";
 import { createIslandRenderState, createRenderRoot, getIslandDefinition } from "./islands.js";
 import type {
   AnyRouteDefinition,
@@ -19,6 +19,14 @@ export interface RenderedRouteResponse {
   response: Response;
 }
 
+interface ResolvedRouteOutput {
+  body: string;
+  head: RouteHead | undefined;
+  props: unknown;
+  status: number;
+  islands: RenderedIsland[];
+}
+
 /**
  * Renders a matched route into HTML and an HTTP response.
  *
@@ -30,43 +38,75 @@ export async function renderRouteResponse(
   routeContext: RouteContext,
   options: CreateRequestHandlerOptions,
 ): Promise<RenderedRouteResponse> {
-  const island = getIslandDefinition(route.component);
-
-  if (island) {
-    throw new TypeError(
-      `Route "${route.path}" cannot use island "${island.id}" as its page component.`,
-    );
-  }
-
-  const props = route.getProps ? await route.getProps(routeContext) : {};
-  const state = createIslandRenderState();
-  const root = createRenderRoot(route.component, props, state);
-  const vueApp = createSSRApp(root);
-  const body = await renderToString(vueApp);
-  const head = route.head
-    ? typeof route.head === "function"
-      ? await route.head(routeContext, props)
-      : route.head
-    : undefined;
+  const rendered = await resolveRouteOutput(route, routeContext);
   const html = renderDocument({
     appDocument: app.document,
-    body,
-    head,
-    islandsRendered: state.islands.length > 0,
+    body: rendered.body,
+    head: rendered.head,
+    islandsRendered: rendered.islands.length > 0,
     assets: options.assets,
   });
-  const status = route.status
-    ? typeof route.status === "function"
-      ? await route.status(routeContext, props)
-      : route.status
-    : 200;
 
   return {
     html,
-    props,
+    props: rendered.props,
     response: new Response(html, {
-      status,
-      headers: createHtmlHeaders(head, state.islands),
+      status: rendered.status,
+      headers: createHtmlHeaders(rendered.head, rendered.islands),
+    }),
+  };
+}
+
+/**
+ * Renders a matched image route into a binary image response.
+ *
+ * The Vue route component is first server-rendered to HTML, then handed to the
+ * configured `imageRenderer` for Chromium-based capture.
+ */
+export async function renderImageRouteResponse(
+  app: VuerendApp,
+  route: AnyRouteDefinition,
+  routeContext: RouteContext,
+  options: CreateRequestHandlerOptions,
+): Promise<RenderedRouteResponse> {
+  if (!route.image) {
+    throw new TypeError(`Route "${route.path}" is not configured as an image route.`);
+  }
+
+  if (!options.imageRenderer) {
+    throw new TypeError(
+      `Route "${route.path}" requires an imageRenderer. Pass one to createRequestHandler().`,
+    );
+  }
+
+  const rendered = await resolveRouteOutput(route, routeContext);
+  const width = route.image.width ?? 1200;
+  const height = route.image.height ?? 630;
+  const format = route.image.format ?? "png";
+  const html = renderImageDocument({
+    appDocument: app.document,
+    body: rendered.body,
+    head: rendered.head,
+    width,
+    height,
+    baseUrl: routeContext.url,
+  });
+  const image = await options.imageRenderer.render({
+    html,
+    url: routeContext.url,
+    width,
+    height,
+    format,
+    quality: route.image.quality,
+  });
+  const contentType = image.contentType ?? defaultImageContentType(format);
+
+  return {
+    html,
+    props: rendered.props,
+    response: new Response(image.body, {
+      status: rendered.status,
+      headers: createImageHeaders(rendered.head, contentType, width, height),
     }),
   };
 }
@@ -92,6 +132,43 @@ export function createRouteContext(
   };
 }
 
+async function resolveRouteOutput(
+  route: AnyRouteDefinition,
+  routeContext: RouteContext,
+): Promise<ResolvedRouteOutput> {
+  const island = getIslandDefinition(route.component);
+
+  if (island) {
+    throw new TypeError(
+      `Route "${route.path}" cannot use island "${island.id}" as its page component.`,
+    );
+  }
+
+  const props = route.getProps ? await route.getProps(routeContext) : {};
+  const state = createIslandRenderState();
+  const root = createRenderRoot(route.component, props, state);
+  const vueApp = createSSRApp(root);
+  const body = await renderToString(vueApp);
+  const head = route.head
+    ? typeof route.head === "function"
+      ? await route.head(routeContext, props)
+      : route.head
+    : undefined;
+  const status = route.status
+    ? typeof route.status === "function"
+      ? await route.status(routeContext, props)
+      : route.status
+    : 200;
+
+  return {
+    body,
+    head,
+    props,
+    status,
+    islands: state.islands,
+  };
+}
+
 function createHtmlHeaders(
   head: RouteHead | undefined,
   islands: readonly RenderedIsland[],
@@ -108,4 +185,25 @@ function createHtmlHeaders(
   }
 
   return headers;
+}
+
+function createImageHeaders(
+  head: RouteHead | undefined,
+  contentType: string,
+  width: number,
+  height: number,
+): Headers {
+  const headers = new Headers();
+  headers.set("content-type", contentType);
+  headers.set("x-vuerend-image-size", `${width}x${height}`);
+
+  if (head?.title) {
+    headers.set("x-vuerend-title", head.title);
+  }
+
+  return headers;
+}
+
+function defaultImageContentType(format: "png" | "jpeg"): string {
+  return format === "jpeg" ? "image/jpeg" : "image/png";
 }

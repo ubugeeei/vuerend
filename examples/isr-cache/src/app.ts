@@ -1,29 +1,17 @@
-import LandingPage from "./pages/LandingPage";
-import PostPage from "./pages/PostPage";
+import { releaseNoteList, releaseNotes } from "./data/release-notes";
+import ReleaseNotesHomeRoute from "./routes/ReleaseNotesHomeRoute";
+import ReleaseNoteRoute from "./routes/ReleaseNoteRoute";
 import { defineApp, defineRoute } from "@vuerend/core";
-
-const posts = {
-  hello: {
-    slug: "hello",
-    summary: "Why a server-first landing page can still feel fresh with ISR.",
-    title: "Fresh enough without becoming an SPA",
-  },
-  world: {
-    slug: "world",
-    summary: "When prerendered content and on-demand regeneration fit together cleanly.",
-    title: "Static routes, dynamic publishing cadence",
-  },
-} as const;
 
 export default defineApp({
   document: {
-    title: "ISR Cache",
+    title: "Release Notes Studio",
     titleTemplate: "%s | Vuerend",
     head: '<meta name="theme-color" content="#143321">',
     meta: [
       {
         name: "description",
-        content: "Incremental static regeneration example with shared CSS and route-aware metadata.",
+        content: "A release notes site with an ISR landing page and fully prerendered entry pages.",
       },
       {
         property: "og:site_name",
@@ -35,11 +23,11 @@ export default defineApp({
   routes: [
     defineRoute({
       path: "/",
-      component: LandingPage,
+      component: ReleaseNotesHomeRoute,
       getProps() {
         return {
           now: new Date().toISOString(),
-          posts: Object.values(posts),
+          posts: releaseNoteList,
         };
       },
       head(context, props) {
@@ -48,7 +36,7 @@ export default defineApp({
           meta: [
             {
               property: "og:title",
-              content: "ISR Cache Landing Page",
+              content: "Release Notes Landing Page",
             },
             {
               property: "og:type",
@@ -60,7 +48,7 @@ export default defineApp({
             },
             {
               property: "og:description",
-              content: `Fresh HTML rendered at ${props.now}.`,
+              content: `Fresh release notes HTML rendered at ${props.now}.`,
             },
           ],
         };
@@ -74,7 +62,7 @@ export default defineApp({
     }),
     defineRoute({
       path: "/posts/:slug",
-      component: PostPage,
+      component: ReleaseNoteRoute,
       getProps(context) {
         const slug = context.params.slug;
 
@@ -82,7 +70,7 @@ export default defineApp({
           throw new TypeError("missing slug");
         }
 
-        const post = posts[slug as keyof typeof posts];
+        const post = releaseNotes[slug as keyof typeof releaseNotes];
 
         if (!post) {
           throw new TypeError(`unknown slug: ${slug}`);
@@ -120,7 +108,7 @@ export default defineApp({
           stylesheets: ["/styles/post.css"],
         };
       },
-      prerender: Object.keys(posts).map((slug) => `/posts/${slug}`),
+      prerender: Object.keys(releaseNotes).map((slug) => `/posts/${slug}`),
       render: {
         strategy: "ssg",
       },

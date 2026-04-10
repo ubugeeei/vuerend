@@ -1,11 +1,18 @@
 {
   "name": "vuerend-monorepo",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ubugeeei/vue-server"
+  },
   "workspaces": [
     "packages/*",
     "examples/*"
   ],
   "type": "module",
+  "scripts": {
+    "release": "node ./scripts/release.mjs"
+  },
   "devDependencies": {
     "@types/node": "^24.8.1",
     "typescript": "^6.0.2",

@@ -1,16 +1,17 @@
-import HomePage from "./pages/HomePage.vue";
-import LibraryPage from "./pages/LibraryPage";
+import GuideHomeRoute from "./routes/GuideHomeRoute.vue";
+import ShortlistRoute from "./routes/ShortlistRoute";
 import { defineApp, defineRoute } from "@vuerend/core";
 
 export default defineApp({
   document: {
-    title: "Mixed SFC + JSX",
+    title: "Buyer's Guide",
     titleTemplate: "%s | Vuerend",
     head: '<meta name="theme-color" content="#173227">',
     meta: [
       {
         name: "description",
-        content: "An MPA example that mixes Vue SFC pages, JSX islands, and shared client state.",
+        content:
+          "A commerce-flavored MPA where SFC pages and JSX islands share a saved shortlist across full page loads.",
       },
       {
         property: "og:site_name",
@@ -22,14 +23,15 @@ export default defineApp({
   routes: [
     defineRoute({
       path: "/",
-      component: HomePage,
+      component: GuideHomeRoute,
       head: {
-        title: "Home",
+        title: "Guide Home",
         meta: [
-          { property: "og:title", content: "Mixed SFC + JSX Home" },
+          { property: "og:title", content: "Buyer's Guide Home" },
           {
             property: "og:description",
-            content: "A server-rendered SFC page with JSX islands layered on top.",
+            content:
+              "A server-rendered SFC buying guide page with JSX shortlist islands layered on top.",
           },
         ],
       },
@@ -37,14 +39,14 @@ export default defineApp({
     }),
     defineRoute({
       path: "/library",
-      component: LibraryPage,
+      component: ShortlistRoute,
       head: {
-        title: "Library",
+        title: "Shortlist",
         meta: [
-          { property: "og:title", content: "Mixed SFC + JSX Library" },
+          { property: "og:title", content: "Buyer's Guide Shortlist" },
           {
             property: "og:description",
-            content: "A JSX route sharing the same client state island as the SFC route.",
+            content: "A JSX route sharing the same saved shortlist state as the SFC guide page.",
           },
         ],
         stylesheets: ["/styles/library.css"],

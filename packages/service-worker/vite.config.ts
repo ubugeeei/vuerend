@@ -4,7 +4,7 @@ export default defineConfig({
   pack: {
     clean: true,
     deps: {
-      neverBundle: ["@vuerend/core/adapters/service-worker"],
+      neverBundle: ["@vuerend/core", "srvx/service-worker"],
     },
     dts: {
       oxc: true,

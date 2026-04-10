@@ -4,7 +4,7 @@ export default defineConfig({
   pack: {
     clean: true,
     deps: {
-      neverBundle: ["@vuerend/core/adapters/cloudflare"],
+      neverBundle: ["@vuerend/core", "srvx/cloudflare"],
     },
     dts: {
       oxc: true,

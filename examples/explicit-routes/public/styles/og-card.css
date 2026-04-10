@@ -1,0 +1,93 @@
+.og-shell {
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at top left, rgba(82, 154, 255, 0.24), transparent 38%),
+    linear-gradient(135deg, #f8fbff 0%, #eef4ff 42%, #fdf7f0 100%);
+  color: #0f172a;
+  font-family: "Iowan Old Style", "Palatino Linotype", "URW Palladio L", "Book Antiqua", serif;
+}
+
+.og-card {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(260px, 0.9fr);
+  gap: 32px;
+  padding: 56px;
+}
+
+.og-copy,
+.og-panel {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.1);
+  backdrop-filter: blur(14px);
+}
+
+.og-copy {
+  padding: 44px 46px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.og-eyebrow {
+  margin: 0 0 18px;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #2563eb;
+}
+
+.og-title {
+  margin: 0;
+  font-size: 74px;
+  line-height: 0.94;
+  letter-spacing: -0.06em;
+}
+
+.og-description {
+  margin: 28px 0 0;
+  max-width: 18ch;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 26px;
+  line-height: 1.35;
+  color: #334155;
+}
+
+.og-panel {
+  padding: 34px 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(180deg, rgba(37, 99, 235, 0.96) 0%, rgba(15, 23, 42, 0.98) 100%);
+  color: #eff6ff;
+}
+
+.og-badge {
+  align-self: flex-start;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.og-list {
+  margin: 0;
+  padding-left: 22px;
+  display: grid;
+  gap: 14px;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 22px;
+  line-height: 1.35;
+}

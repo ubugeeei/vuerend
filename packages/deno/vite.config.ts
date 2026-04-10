@@ -4,7 +4,7 @@ export default defineConfig({
   pack: {
     clean: true,
     deps: {
-      neverBundle: ["@vuerend/core/adapters/deno"],
+      neverBundle: ["@vuerend/core", "srvx/deno"],
     },
     dts: {
       oxc: true,

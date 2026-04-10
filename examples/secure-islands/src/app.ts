@@ -1,16 +1,17 @@
-import HomePage from "./pages/HomePage";
-import PricingPage from "./pages/PricingPage";
+import LaunchHomeRoute from "./routes/LaunchHomeRoute";
+import ProgramsRoute from "./routes/ProgramsRoute";
 import { defineApp, defineRoute } from "@vuerend/core";
 
 export default defineApp({
   document: {
-    title: "Secure Islands",
+    title: "Launch Week",
     titleTemplate: "%s | Vuerend",
     head: '<meta name="theme-color" content="#1d2a4a">',
     meta: [
       {
         name: "description",
-        content: "Server-first landing pages with explicit islands and targeted hydration.",
+        content:
+          "A launch site that keeps the page static by default and hydrates only the estimator and signup flow.",
       },
       {
         property: "og:site_name",
@@ -22,14 +23,14 @@ export default defineApp({
   routes: [
     defineRoute({
       path: "/",
-      component: HomePage,
+      component: LaunchHomeRoute,
       head: {
-        title: "Launch Page",
+        title: "Launch Site",
         meta: [
-          { property: "og:title", content: "Secure Islands Launch Page" },
+          { property: "og:title", content: "Launch Week Site" },
           {
             property: "og:description",
-            content: "A mostly static product page with tiny interactive islands.",
+            content: "A mostly static launch page with two narrowly scoped islands.",
           },
         ],
       },
@@ -37,14 +38,14 @@ export default defineApp({
     }),
     defineRoute({
       path: "/pricing",
-      component: PricingPage,
+      component: ProgramsRoute,
       head: {
-        title: "Pricing",
+        title: "Programs",
         meta: [
-          { property: "og:title", content: "Secure Islands Pricing" },
+          { property: "og:title", content: "Launch Week Programs" },
           {
             property: "og:description",
-            content: "A pure server-rendered companion page in the same app.",
+            content: "A pure server-rendered companion page in the same launch app.",
           },
         ],
         stylesheets: ["/styles/pricing.css"],

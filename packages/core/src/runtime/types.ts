@@ -29,6 +29,9 @@ export type HeadLink = HeadTagAttributes;
 /** A rendered `<script>` tag descriptor. */
 export type HeadScript = HeadTagAttributes & { children?: string };
 
+/** Binary payload types accepted when returning a rendered image. */
+export type BinaryBody = ArrayBuffer | ArrayBufferView;
+
 type Simplify<T> = {
   [Key in keyof T]: T[Key];
 } & {};
@@ -116,6 +119,17 @@ export interface RouteRenderOptions<Props = unknown, Path extends string = strin
   cacheKey?: (context: RouteContext<Path>) => Awaitable<string>;
 }
 
+/** Output formats supported by image routes. */
+export type RouteImageFormat = "png" | "jpeg";
+
+/** Chromium-backed image rendering options for a route. */
+export interface RouteImageOptions {
+  width?: number;
+  height?: number;
+  format?: RouteImageFormat;
+  quality?: number;
+}
+
 /** A regular Vue component that remains server-only unless wrapped in `defineIsland()`. */
 export type ServerComponent<TComponent extends Component = Component> =
   TComponent extends AnyDefinedIsland ? never : TComponent;
@@ -136,6 +150,7 @@ export interface RouteDefinition<
   component: ServerComponent<TComponent>;
   getProps?: (context: RouteContext<Path>) => Awaitable<Props>;
   head?: RouteHeadResolver<Props, Path>;
+  image?: RouteImageOptions;
   render?: RouteRenderOptions<Props, Path>;
   prerender?: string[] | ((baseUrl: URL) => Awaitable<string[]>);
   status?: number | ((context: RouteContext<Path>, props: Props) => Awaitable<number>);
@@ -143,6 +158,15 @@ export interface RouteDefinition<
 
 /** A route definition with its prop type erased. */
 export type AnyRouteDefinition = RouteDefinition<string, Component, any>;
+
+/** A route definition that renders a binary image instead of an HTML document. */
+export type ImageRouteDefinition<
+  Path extends string = string,
+  TComponent extends Component = Component,
+  Props = ComponentProps<TComponent>,
+> = RouteDefinition<Path, TComponent, Props> & {
+  image: RouteImageOptions;
+};
 
 /** Shared document defaults applied to every rendered page. */
 export interface DocumentConfig extends RouteHead {
@@ -214,6 +238,27 @@ export interface ClientBuildAssets {
   css?: string[] | undefined;
 }
 
+/** Input passed to an HTML-to-image renderer. */
+export interface HtmlImageRendererInput {
+  html: string;
+  url: URL;
+  width: number;
+  height: number;
+  format: RouteImageFormat;
+  quality?: number | undefined;
+}
+
+/** The binary result produced by an HTML-to-image renderer. */
+export interface HtmlImageRenderResult {
+  body: BinaryBody;
+  contentType?: string | undefined;
+}
+
+/** Renders a complete HTML document into an image buffer. */
+export interface HtmlImageRenderer {
+  render(input: HtmlImageRendererInput): Awaitable<HtmlImageRenderResult>;
+}
+
 /** Cached HTML together with the metadata required to revalidate it later. */
 export interface RenderCacheEntry {
   body: string;
@@ -243,7 +288,21 @@ export interface CreateRequestHandlerOptions {
   app: VuerendApp;
   assets?: ClientBuildAssets;
   cache?: RenderCache;
+  imageRenderer?: HtmlImageRenderer | undefined;
 }
+
+/** Extra options supplied to `createRequestHandler()` outside the app definition. */
+export type RequestHandlerRuntimeOptions = Omit<CreateRequestHandlerOptions, "app" | "assets">;
+
+/** Context passed to a request-handler options resolver inside the Vite plugin. */
+export interface RequestHandlerOptionsContext {
+  assets: ClientBuildAssets;
+}
+
+/** Lazily resolves additional options for `createRequestHandler()`. */
+export type RequestHandlerOptionsResolver = (
+  context: RequestHandlerOptionsContext,
+) => Awaitable<RequestHandlerRuntimeOptions>;
 
 /** Extra runtime data supplied by adapters while handling a request. */
 export interface RequestHandlerContext {

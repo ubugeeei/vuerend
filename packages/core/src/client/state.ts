@@ -220,10 +220,7 @@ function resolveClientStateStorage(options: NormalizedUseClientStateOptions): St
   }
 }
 
-function readStoredClientState<T extends JsonValue>(
-  storage: Storage,
-  key: string,
-): T | undefined {
+function readStoredClientState<T extends JsonValue>(storage: Storage, key: string): T | undefined {
   const raw = storage.getItem(key);
 
   if (raw === null) {

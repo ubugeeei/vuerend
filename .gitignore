@@ -4,3 +4,4 @@ node_modules
 .turbo
 .DS_Store
 *.tgz
+.release-artifacts

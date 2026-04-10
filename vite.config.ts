@@ -4,22 +4,22 @@ import type { PackUserConfig } from "vite-plus/pack";
 const coreNeverBundle = [
   "vue",
   "vite",
-  "srvx",
   "srvx/node",
-  "srvx/bun",
-  "srvx/deno",
-  "srvx/cloudflare",
-  "srvx/service-worker",
   "@vitejs/plugin-vue",
   "@vitejs/plugin-vue-jsx",
   "@vue/server-renderer",
 ];
 
-function adapterPack(cwd: string, name: string): PackUserConfig {
+function adapterPack(
+  cwd: string,
+  name: string,
+  runtimeModule: string,
+  extras: string[] = [],
+): PackUserConfig {
   return {
     clean: true,
     deps: {
-      neverBundle: ["@vuerend/core"],
+      neverBundle: ["@vuerend/core", runtimeModule, ...extras],
     },
     dts: {
       oxc: true,
@@ -56,11 +56,6 @@ export default defineConfig({
         vite: "packages/core/src/vite.ts",
         runtime: "packages/core/src/runtime.ts",
         client: "packages/core/src/client.ts",
-        "adapters/node": "packages/core/src/adapters/node.ts",
-        "adapters/bun": "packages/core/src/adapters/bun.ts",
-        "adapters/deno": "packages/core/src/adapters/deno.ts",
-        "adapters/cloudflare": "packages/core/src/adapters/cloudflare.ts",
-        "adapters/service-worker": "packages/core/src/adapters/service-worker.ts",
       },
       format: ["esm"],
       name: "@vuerend/core",
@@ -68,10 +63,10 @@ export default defineConfig({
       sourcemap: true,
       tsconfig: "packages/core/tsconfig.json",
     },
-    adapterPack("packages/node", "@vuerend/node"),
-    adapterPack("packages/bun", "@vuerend/bun"),
-    adapterPack("packages/deno", "@vuerend/deno"),
-    adapterPack("packages/cloudflare", "@vuerend/cloudflare"),
-    adapterPack("packages/service-worker", "@vuerend/service-worker"),
+    adapterPack("packages/node", "@vuerend/node", "srvx/node", ["playwright"]),
+    adapterPack("packages/bun", "@vuerend/bun", "srvx/bun"),
+    adapterPack("packages/deno", "@vuerend/deno", "srvx/deno"),
+    adapterPack("packages/cloudflare", "@vuerend/cloudflare", "srvx/cloudflare"),
+    adapterPack("packages/service-worker", "@vuerend/service-worker", "srvx/service-worker"),
   ],
 });

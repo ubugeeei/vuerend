@@ -1,7 +1,7 @@
 import { defineComponent } from "vue";
 import { describe, expectTypeOf, it } from "vitest";
 import { useClientState } from "../src/client";
-import { defineApp, defineIsland, defineRoute } from "../src/runtime";
+import { defineApp, defineImageRoute, defineIsland, defineRoute } from "../src/runtime";
 
 describe("type safety", () => {
   it("infers params from the route path", () => {
@@ -64,6 +64,33 @@ describe("type safety", () => {
         title: "Home",
         meta: [{ property: "og:title", content: "Home Page" }],
         stylesheets: ["/assets/app.css"],
+      },
+    });
+  });
+
+  it("accepts image routes with the same inferred params and props", () => {
+    const ImagePage = defineComponent({
+      props: {
+        slug: {
+          required: true,
+          type: String,
+        },
+      },
+    });
+
+    defineImageRoute({
+      path: "/og/:slug.png",
+      component: ImagePage,
+      getProps(context) {
+        expectTypeOf(context.params.slug).toEqualTypeOf<string>();
+
+        return {
+          slug: context.params.slug,
+        };
+      },
+      image: {
+        width: 1200,
+        height: 630,
       },
     });
   });

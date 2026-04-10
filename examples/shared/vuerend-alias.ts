@@ -17,27 +17,7 @@ export function vuerendAliases(): Array<{ find: string; replacement: string }> {
     { find: "@vuerend/core/vite", replacement: resolve(coreRoot, "src/vite.ts") },
     { find: "@vuerend/core/runtime", replacement: resolve(coreRoot, "src/runtime.ts") },
     { find: "@vuerend/core/client", replacement: resolve(coreRoot, "src/client.ts") },
-    {
-      find: "@vuerend/core/adapters/node",
-      replacement: resolve(coreRoot, "src/adapters/node.ts"),
-    },
-    {
-      find: "@vuerend/core/adapters/bun",
-      replacement: resolve(coreRoot, "src/adapters/bun.ts"),
-    },
-    {
-      find: "@vuerend/core/adapters/deno",
-      replacement: resolve(coreRoot, "src/adapters/deno.ts"),
-    },
-    {
-      find: "@vuerend/core/adapters/cloudflare",
-      replacement: resolve(coreRoot, "src/adapters/cloudflare.ts"),
-    },
-    {
-      find: "@vuerend/core/adapters/service-worker",
-      replacement: resolve(coreRoot, "src/adapters/service-worker.ts"),
-    },
-    { find: "@vuerend/core", replacement: resolve(coreRoot, "src/index.ts") },
+    { find: "@vuerend/core", replacement: resolve(coreRoot, "src/runtime.ts") },
     { find: "@vuerend/node", replacement: resolve(nodeRoot, "src/index.ts") },
     { find: "@vuerend/cloudflare", replacement: resolve(cloudflareRoot, "src/index.ts") },
     {

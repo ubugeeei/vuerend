@@ -1,13 +1,14 @@
 # @vuerend/core
 
-Lightweight Vue server renderer and Vite v8 plugin built around explicit routes, zero-JS-by-default rendering, explicit secure islands, and opt-in runtime caching.
+Zero JavaScript-first Vue runtime and Vite v8 plugin for MPAs with SSR, SSG, explicit routes, secure islands, and opt-in runtime caching.
 
 ## Goals
 
 - Vite v8 with the Environment API instead of a client router or filesystem routing
+- Zero JavaScript-first rendering for MPA-style apps
 - `srvx`-first runtime so the same fetch handler can target Node, Deno, Bun, Cloudflare Workers, dynamic workers, Vercel/Netlify edge-style runtimes, and service workers
-- Server-first rendering by default, with explicit component-level island boundaries
-- SSR, SSG, ISR, opt-in cache invalidation, and prerender collection without pulling in Vue Router
+- Server-rendered documents by default, with explicit component-level island boundaries
+- SSR and SSG as the primary rendering modes, with ISR and revalidation when freshness needs it
 - Vue SFC and JSX support out of the box
 
 ## Install
@@ -47,14 +48,14 @@ The `islands` option is optional. Leave it out when the app is pure server compo
 
 ```ts
 // src/app.ts
-import HomePage from "./pages/HomePage";
+import HomeRoute from "./routes/HomeRoute";
 import { defineApp, defineRoute } from "@vuerend/core";
 
 export default defineApp({
   routes: [
     defineRoute({
       path: "/",
-      component: HomePage,
+      component: HomeRoute,
       render: { strategy: "ssg" },
     }),
   ],
@@ -63,12 +64,12 @@ export default defineApp({
 
 ```ts
 // src/islands.ts
-import CounterView from "./components/CounterView";
+import CounterIslandView from "./islands/CounterIslandView";
 import { defineIsland, defineIslands } from "@vuerend/core";
 
 export const CounterIsland = defineIsland("counter", {
-  component: CounterView,
-  load: () => import("./components/CounterView"),
+  component: CounterIslandView,
+  load: () => import("./islands/CounterIslandView.loader"),
   hydrate: "visible",
 });
 
@@ -77,7 +78,7 @@ export default defineIslands([CounterIsland]);
 
 ## Rendering Model
 
-- Regular Vue components are server components by default and ship no browser JavaScript.
+- Zero JavaScript is the starting point. Regular Vue components are server components by default and ship no browser JavaScript.
 - Route components stay server-only. Render `defineIsland()` components inside them when a narrow client boundary is needed.
 - `defineIsland()` marks an explicit boundary and emits a small JSON payload plus a targeted hydration root.
 - `ssr: false` creates a client-only island.
@@ -88,6 +89,7 @@ export default defineIslands([CounterIsland]);
 - Routing is explicit with `defineRoute()`.
 - No filesystem router is required.
 - No client router is included.
+- The navigation model is ordinary MPA links and documents.
 - Route params come from the server request path, and pages can resolve props with `getProps(context)`.
 
 ## Document Head
@@ -97,7 +99,7 @@ export default defineIslands([CounterIsland]);
 - Use `meta` for SEO and Open Graph tags, and `stylesheets` for shared CSS files you want injected as `<link rel="stylesheet">`.
 
 ```ts
-import HomePage from "./pages/HomePage";
+import HomeRoute from "./routes/HomeRoute";
 import { defineApp, defineRoute } from "@vuerend/core";
 
 export default defineApp({
@@ -110,7 +112,7 @@ export default defineApp({
   routes: [
     defineRoute({
       path: "/",
-      component: HomePage,
+      component: HomeRoute,
       head: {
         title: "Home",
         meta: [
@@ -124,6 +126,68 @@ export default defineApp({
 });
 ```
 
+## Dynamic OG Images
+
+- Use `defineImageRoute()` when a route should return an image instead of an HTML document.
+- The image route component is still a normal server-side Vue component, so Vue SFC templates work well for OG cards.
+- `createRequestHandler()` needs an `imageRenderer` implementation. `@vuerend/node` ships `createChromiumImageRenderer()` for Playwright + Chromium.
+
+```ts
+import HomeRoute from "./routes/HomeRoute";
+import OgCardRoute from "./routes/OgCardRoute.vue";
+import {
+  defineApp,
+  defineImageRoute,
+  defineRequestHandlerOptions,
+  defineRoute,
+} from "@vuerend/core";
+import { createChromiumImageRenderer } from "@vuerend/node";
+
+export const requestHandlerOptions = defineRequestHandlerOptions(() => ({
+  imageRenderer: createChromiumImageRenderer(),
+}));
+
+export default defineApp({
+  routes: [
+    defineRoute({
+      path: "/",
+      component: HomeRoute,
+      head(context) {
+        const ogImageUrl = new URL("/og/home.png", context.url).href;
+
+        return {
+          meta: [{ property: "og:image", content: ogImageUrl }],
+        };
+      },
+    }),
+    defineImageRoute({
+      path: "/og/home.png",
+      component: OgCardRoute,
+      getProps() {
+        return {
+          title: "Dynamic OG",
+        };
+      },
+      head: {
+        stylesheets: ["/styles/og.css"],
+      },
+      image: {
+        width: 1200,
+        height: 630,
+        format: "png",
+      },
+    }),
+  ],
+});
+```
+
+Install Playwright in the app that renders the image routes:
+
+```bash
+pnpm add -D playwright
+pnpm exec playwright install chromium
+```
+
 ## Middleware
 
 - `defineApp({ middleware })` runs fetch-style middleware before route matching and rendering.
@@ -131,7 +195,7 @@ export default defineApp({
 - Use `context.state` to share request-scoped data with `getProps()`, `head()`, and other route hooks.
 
 ```ts
-import HomePage from "./pages/HomePage";
+import HomeRoute from "./routes/HomeRoute";
 import { defineApp, defineRoute } from "@vuerend/core";
 
 export default defineApp({
@@ -146,7 +210,7 @@ export default defineApp({
   routes: [
     defineRoute({
       path: "/",
-      component: HomePage,
+      component: HomeRoute,
       getProps(context) {
         return {
           requestPath: String(context.state.requestPath ?? "/"),
@@ -208,9 +272,12 @@ defineRoute({
 
 ## Examples
 
-- `../../examples/explicit-routes`: minimal explicit-routing app
-- `../../examples/secure-islands`: secure island boundaries and targeted hydration
-- `../../examples/isr-cache`: opt-in cache, ISR, and prerendering
-- `../../examples/node-srvx`: Node entry powered by `srvx/node`
-- `../../examples/cloudflare-worker`: Cloudflare Worker fetch handler example
-- `../../examples/mixed-sfc-jsx`: mixed Vue SFC and JSX app
+- The example suite uses a shared layout: `src/app.ts`, `src/data/*`, `src/routes/*`, and optional `src/islands/*`.
+- Start with `../../examples/README.md` if you want the scenario-first index and reading order.
+- `../../examples/explicit-routes`: handbook / docs hub with explicit routes, SSG pages, and social cards
+- `../../examples/secure-islands`: launch site with targeted hydration and client-only signup
+- `../../examples/isr-cache`: release-notes site with ISR landing page and prerendered entries
+- `../../examples/node-srvx`: internal-tool Node entry powered by `srvx/node`
+- `../../examples/cloudflare-worker`: edge-delivered status board on Cloudflare Workers
+- `../../examples/mixed-sfc-jsx`: buying-guide MPA mixing Vue SFC pages and JSX islands
+- `../../examples/social-cards`: dynamic OG image workflow authored as Vue SFCs

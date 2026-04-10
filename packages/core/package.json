@@ -1,8 +1,12 @@
 {
   "name": "@vuerend/core",
   "version": "0.1.0",
-  "description": "Lightweight Vue server renderer and Vite v8 plugin with explicit routing and secure islands.",
+  "description": "Zero JavaScript-first Vue MPA runtime and Vite v8 plugin with SSR, SSG, and secure islands.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ubugeeei/vue-server"
+  },
   "files": [
     "dist"
   ],
@@ -24,27 +28,10 @@
       "types": "./dist/client.d.mts",
       "import": "./dist/client.mjs"
     },
-    "./adapters/node": {
-      "types": "./dist/adapters/node.d.mts",
-      "import": "./dist/adapters/node.mjs"
-    },
-    "./adapters/bun": {
-      "types": "./dist/adapters/bun.d.mts",
-      "import": "./dist/adapters/bun.mjs"
-    },
-    "./adapters/deno": {
-      "types": "./dist/adapters/deno.d.mts",
-      "import": "./dist/adapters/deno.mjs"
-    },
-    "./adapters/cloudflare": {
-      "types": "./dist/adapters/cloudflare.d.mts",
-      "import": "./dist/adapters/cloudflare.mjs"
-    },
-    "./adapters/service-worker": {
-      "types": "./dist/adapters/service-worker.d.mts",
-      "import": "./dist/adapters/service-worker.mjs"
-    },
     "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "@vitejs/plugin-vue": "^6.0.5",

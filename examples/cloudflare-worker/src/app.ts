@@ -1,16 +1,17 @@
-import WorkerPage from "./pages/WorkerPage";
-import DeployPage from "./pages/DeployPage";
+import DeploymentRoute from "./routes/DeploymentRoute";
+import EdgeOverviewRoute from "./routes/EdgeOverviewRoute";
 import { defineApp, defineRoute } from "@vuerend/core";
 
 export default defineApp({
   document: {
-    title: "Cloudflare Worker",
+    title: "Edge Status Board",
     titleTemplate: "%s | Vuerend",
     head: '<meta name="theme-color" content="#142b52">',
     meta: [
       {
         name: "description",
-        content: "Cloudflare Worker adapter example showing the same Vuerend app model at the edge.",
+        content:
+          "A Cloudflare Worker example showing how the same explicit-route app model ships to the edge.",
       },
       {
         property: "og:site_name",
@@ -35,7 +36,7 @@ export default defineApp({
   routes: [
     defineRoute({
       path: "/",
-      component: WorkerPage,
+      component: EdgeOverviewRoute,
       getProps(context) {
         return {
           requestHost: String(context.state.requestHost ?? context.url.host),
@@ -44,19 +45,20 @@ export default defineApp({
         };
       },
       head: {
-        title: "Home",
+        title: "Edge Overview",
         meta: [
-          { property: "og:title", content: "Cloudflare Worker Home" },
+          { property: "og:title", content: "Edge Status Board Overview" },
           {
             property: "og:description",
-            content: "The same app definition running through the Cloudflare adapter.",
+            content:
+              "The same app definition running through the Cloudflare adapter for edge delivery.",
           },
         ],
       },
     }),
     defineRoute({
       path: "/deploy",
-      component: DeployPage,
+      component: DeploymentRoute,
       getProps(context) {
         return {
           requestHost: String(context.state.requestHost ?? context.url.host),
@@ -64,12 +66,12 @@ export default defineApp({
         };
       },
       head: {
-        title: "Deploy",
+        title: "Deployment Notes",
         meta: [
-          { property: "og:title", content: "Cloudflare Worker Deployment Notes" },
+          { property: "og:title", content: "Edge Status Board Deployment Notes" },
           {
             property: "og:description",
-            content: "Why a fetch-compatible app model maps cleanly onto edge runtimes.",
+            content: "Why a fetch-compatible app model maps cleanly onto Cloudflare Workers.",
           },
         ],
         stylesheets: ["/styles/deploy.css"],

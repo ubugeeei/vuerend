@@ -85,6 +85,7 @@ export function vuerend(options: VuerendPluginOptions): PluginOption[] {
               sourcemap: true,
               ssr: true,
               rolldownOptions: {
+                external: ["playwright", "srvx/node"],
                 input: {
                   server: "virtual:vuerend/server-entry",
                 },

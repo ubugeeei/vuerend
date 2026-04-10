@@ -1,16 +1,17 @@
-import HomePage from "./pages/HomePage";
-import MiddlewarePage from "./pages/MiddlewarePage";
+import RequestTraceRoute from "./routes/RequestTraceRoute";
+import SupportOverviewRoute from "./routes/SupportOverviewRoute";
 import { defineApp, defineRoute } from "@vuerend/core";
 
 export default defineApp({
   document: {
-    title: "srvx Node",
+    title: "Support Desk",
     titleTemplate: "%s | Vuerend",
     head: '<meta name="theme-color" content="#2d233c">',
     meta: [
       {
         name: "description",
-        content: "Node adapter example with middleware and request-scoped state.",
+        content:
+          "An internal-tools example using the Node adapter, middleware, and request-scoped state.",
       },
       {
         property: "og:site_name",
@@ -32,7 +33,7 @@ export default defineApp({
   routes: [
     defineRoute({
       path: "/",
-      component: HomePage,
+      component: SupportOverviewRoute,
       getProps(context) {
         return {
           requestMethod: String(context.state.requestMethod ?? context.request.method),
@@ -41,19 +42,20 @@ export default defineApp({
         };
       },
       head: {
-        title: "Home",
+        title: "Support Overview",
         meta: [
-          { property: "og:title", content: "srvx Node Home" },
+          { property: "og:title", content: "Support Desk Overview" },
           {
             property: "og:description",
-            content: "A Node server entry using middleware and request-scoped state.",
+            content:
+              "A Node entry using middleware and request-scoped state for an internal support workflow.",
           },
         ],
       },
     }),
     defineRoute({
       path: "/middleware",
-      component: MiddlewarePage,
+      component: RequestTraceRoute,
       getProps(context) {
         return {
           requestMethod: String(context.state.requestMethod ?? context.request.method),
@@ -62,12 +64,12 @@ export default defineApp({
         };
       },
       head: {
-        title: "Middleware",
+        title: "Request Trace",
         meta: [
-          { property: "og:title", content: "srvx Node Middleware Flow" },
+          { property: "og:title", content: "Support Desk Request Trace" },
           {
             property: "og:description",
-            content: "How middleware feeds request-scoped data into server-rendered routes.",
+            content: "How middleware feeds request-scoped data into an internal-tool route.",
           },
         ],
         stylesheets: ["/styles/middleware.css"],
