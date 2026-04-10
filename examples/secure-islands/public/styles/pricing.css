@@ -1,0 +1,46 @@
+body {
+  background:
+    radial-gradient(circle at bottom left, rgba(255, 198, 128, 0.25), transparent 34%),
+    linear-gradient(180deg, #fff8ef 0%, #f5ecde 100%);
+}
+
+.secure-shell--pricing .pricing-card {
+  min-height: 100%;
+}
+
+.pricing-hero {
+  display: grid;
+  gap: 1rem;
+  align-items: end;
+}
+
+.price-tag {
+  margin: 0 0 1rem;
+  color: #704216;
+  font-size: 2.6rem;
+  font-weight: 800;
+}
+
+.price-tag span {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.pricing-card {
+  padding: 1.35rem;
+  border: 1px solid rgba(112, 66, 22, 0.14);
+  border-radius: 1.5rem;
+  background: rgba(255, 250, 243, 0.86);
+  box-shadow: 0 16px 45px rgba(112, 66, 22, 0.11);
+}
+
+.pricing-card--featured {
+  background: rgba(255, 243, 223, 0.96);
+  transform: translateY(-0.2rem);
+}
+
+@media (min-width: 760px) {
+  .pricing-hero {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}

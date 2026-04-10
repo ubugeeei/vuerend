@@ -11,8 +11,9 @@ import {
 import { createRouteContext, renderRouteResponse } from "./render.js";
 import type {
   AnyRouteDefinition,
-  DocumentConfig,
   CreateRequestHandlerOptions,
+  MiddlewareContext,
+  RequestMiddleware,
   RequestHandlerContext,
   VuerendApp,
   VuerendRequestHandler,
@@ -25,8 +26,7 @@ import type {
  */
 export function defineApp<const Routes extends readonly AnyRouteDefinition[]>(app: {
   routes: Routes;
-  document?: DocumentConfig;
-}): VuerendApp<Routes> {
+} & VuerendApp<Routes>): VuerendApp<Routes> {
   return app;
 }
 
@@ -40,12 +40,13 @@ export function createRequestHandler(
   options: CreateRequestHandlerOptions,
 ): VuerendRequestHandler {
   const routes = compileRoutes(options.app.routes);
+  const middleware = options.app.middleware ?? [];
   const cache = options.cache ?? createMemoryRenderCache();
   const pendingRevalidations = new Map<string, Promise<Response>>();
 
-  const handle = async (
+  const handleRouteRequest = async (
     request: Request,
-    context: RequestHandlerContext = {},
+    context: MiddlewareContext,
   ): Promise<Response> => {
     const url = new URL(request.url);
     const matched = matchRoute(routes, url.pathname);
@@ -127,6 +128,15 @@ export function createRequestHandler(
     return rendered;
   };
 
+  const run = composeMiddleware(middleware, handleRouteRequest);
+
+  const handle = async (
+    request: Request,
+    context: RequestHandlerContext = {},
+  ): Promise<Response> => {
+    return run(request, normalizeRequestHandlerContext(context));
+  };
+
   return Object.assign(handle, {
     cache,
     async listPrerenderRoutes() {
@@ -190,4 +200,35 @@ function primeBackgroundRefresh(
 
   pendingRevalidations.set(cacheKey, refresh);
   waitUntil(refresh);
+}
+
+function composeMiddleware(
+  middleware: readonly RequestMiddleware[],
+  handler: (request: Request, context: MiddlewareContext) => Promise<Response>,
+): (request: Request, context: MiddlewareContext) => Promise<Response> {
+  return middleware.reduceRight<(request: Request, context: MiddlewareContext) => Promise<Response>>(
+    (next, current) => {
+      return async (request, context) => {
+        return current(request, context, (nextRequest = request, nextContext = context) => {
+          return next(
+            nextRequest,
+            nextContext === context ? context : normalizeRequestHandlerContext(nextContext),
+          );
+        });
+      };
+    },
+    handler,
+  );
+}
+
+function normalizeRequestHandlerContext(
+  context: RequestHandlerContext = {},
+): MiddlewareContext {
+  return {
+    ...context,
+    state: context.state ?? {},
+    waitUntil: (promise) => {
+      context.waitUntil?.(promise);
+    },
+  };
 }

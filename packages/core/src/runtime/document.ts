@@ -1,4 +1,11 @@
-import type { ClientBuildAssets, DocumentConfig, RouteHead } from "./types.js";
+import type {
+  ClientBuildAssets,
+  DocumentConfig,
+  HeadLink,
+  HeadMeta,
+  HeadScript,
+  RouteHead,
+} from "./types.js";
 
 /** Input required to assemble the final HTML document string. */
 export interface RenderDocumentInput {
@@ -28,20 +35,29 @@ export function renderDocument(input: RenderDocumentInput): string {
     ...document?.bodyAttrs,
     ...head?.bodyAttrs,
   });
-  const meta = [
-    '<meta charset="utf-8">',
-    '<meta name="viewport" content="width=device-width, initial-scale=1">',
-    ...renderTagCollection("meta", document?.meta),
-    ...renderTagCollection("meta", head?.meta),
-  ].join("");
-  const links = [
-    ...renderTagCollection("link", document?.links),
-    ...renderTagCollection("link", head?.links),
-    ...renderStyles(input.assets?.css),
-  ].join("");
+  const meta = renderTagCollection(
+    "meta",
+    dedupeTagCollection<HeadMeta>([
+      { charset: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      ...(document?.meta ?? []),
+      ...(head?.meta ?? []),
+    ]),
+  ).join("");
+  const links = renderTagCollection(
+    "link",
+    dedupeLinkCollection([
+      ...(document?.links ?? []),
+      ...createStylesheetLinks(document?.stylesheets),
+      ...(head?.links ?? []),
+      ...createStylesheetLinks(head?.stylesheets),
+      ...createStylesheetLinks(input.assets?.css),
+    ]),
+  ).join("");
   const scripts = [
-    ...renderScripts(document?.scripts),
-    ...renderScripts(head?.scripts),
+    ...renderScripts(
+      dedupeScriptCollection([...(document?.scripts ?? []), ...(head?.scripts ?? [])]),
+    ),
     ...renderClientEntry(input.assets?.entry, input.islandsRendered),
   ].join("");
 
@@ -52,6 +68,7 @@ export function renderDocument(input: RenderDocumentInput): string {
     meta,
     title ? `<title>${escapeHtml(title)}</title>` : "",
     document?.head ?? "",
+    head?.head ?? "",
     links,
     scripts,
     "</head>",
@@ -81,7 +98,7 @@ function applyTitleTemplate(
 
 function renderTagCollection(
   tagName: "meta" | "link",
-  entries?: Array<Record<string, string>>,
+  entries?: Array<Record<string, string | undefined>>,
 ): string[] {
   if (!entries?.length) {
     return [];
@@ -90,7 +107,7 @@ function renderTagCollection(
   return entries.map((entry) => `<${tagName}${renderAttributes(entry)}>`);
 }
 
-function renderScripts(entries?: Array<Record<string, string> & { children?: string }>): string[] {
+function renderScripts(entries?: HeadScript[]): string[] {
   if (!entries?.length) {
     return [];
   }
@@ -100,14 +117,6 @@ function renderScripts(entries?: Array<Record<string, string> & { children?: str
       children ? escapeScript(children) : ""
     }</script>`;
   });
-}
-
-function renderStyles(entries?: readonly string[]): string[] {
-  if (!entries?.length) {
-    return [];
-  }
-
-  return entries.map((href) => `<link rel="stylesheet" href="${escapeAttribute(href)}">`);
 }
 
 function renderClientEntry(entry: string | undefined, islandsRendered: boolean): string[] {
@@ -143,4 +152,79 @@ function escapeScript(value: string): string {
     .replaceAll("<", "\\u003c")
     .replaceAll("\u2028", "\\u2028")
     .replaceAll("\u2029", "\\u2029");
+}
+
+function createStylesheetLinks(entries?: readonly string[]): HeadLink[] {
+  if (!entries?.length) {
+    return [];
+  }
+
+  return entries.map((href) => ({ rel: "stylesheet", href }));
+}
+
+function dedupeTagCollection<TEntry extends Record<string, string | undefined>>(
+  entries: readonly TEntry[],
+): TEntry[] {
+  const seen = new Set<string>();
+
+  return entries.filter((entry) => {
+    const key = serializeAttributes(entry);
+
+    if (seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+    return true;
+  });
+}
+
+function dedupeLinkCollection(entries: readonly HeadLink[]): HeadLink[] {
+  const seen = new Set<string>();
+
+  return entries.filter((entry) => {
+    const key = entry.href
+      ? [
+          normalizeToken(entry.rel),
+          entry.href,
+          normalizeToken(entry.as),
+          normalizeToken(entry.type),
+          entry.media ?? "",
+        ].join("|")
+      : serializeAttributes(entry);
+
+    if (seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+    return true;
+  });
+}
+
+function dedupeScriptCollection(entries: readonly HeadScript[]): HeadScript[] {
+  const seen = new Set<string>();
+
+  return entries.filter(({ children, ...attributes }) => {
+    const key = [attributes.src ?? "", serializeAttributes(attributes), children ?? ""].join("|");
+
+    if (seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+    return true;
+  });
+}
+
+function serializeAttributes(attributes: Record<string, string | undefined>): string {
+  return Object.entries(attributes)
+    .filter(([, value]) => value !== undefined && value !== "")
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([key, value]) => `${key}:${value}`)
+    .join("|");
+}
+
+function normalizeToken(value: string | undefined): string {
+  return value?.trim().toLowerCase() ?? "";
 }

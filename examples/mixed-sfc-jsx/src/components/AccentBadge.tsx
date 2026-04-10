@@ -1,4 +1,4 @@
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 
 export default defineComponent({
   name: "AccentBadge",
@@ -8,7 +8,20 @@ export default defineComponent({
       type: String,
     },
   },
-  render() {
-    return <strong>{this.label}</strong>;
+  setup(props) {
+    const active = ref(false);
+
+    return () => (
+      <button
+        class={["accent-badge", active.value ? "accent-badge--active" : ""]}
+        type="button"
+        onClick={() => {
+          active.value = !active.value;
+        }}
+      >
+        <span class="accent-badge__dot" />
+        {active.value ? "interactive now" : props.label}
+      </button>
+    );
   },
 });

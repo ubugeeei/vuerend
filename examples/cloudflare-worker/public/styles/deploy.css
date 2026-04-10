@@ -1,0 +1,19 @@
+body {
+  background:
+    radial-gradient(circle at bottom left, rgba(255, 193, 110, 0.24), transparent 34%),
+    linear-gradient(180deg, #fff8f0 0%, #f2e9df 100%);
+}
+
+.edge-shell--deploy .edge-panel,
+.edge-shell--deploy .edge-card {
+  border-color: rgba(118, 78, 30, 0.12);
+  box-shadow: 0 16px 45px rgba(118, 78, 30, 0.1);
+}
+
+.edge-shell--deploy .edge-link {
+  background: #764e1e;
+}
+
+.edge-shell--deploy .edge-link:hover {
+  background: #906127;
+}

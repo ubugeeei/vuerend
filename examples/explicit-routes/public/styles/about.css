@@ -1,0 +1,18 @@
+body {
+  background:
+    radial-gradient(circle at bottom right, rgba(255, 188, 122, 0.28), transparent 35%),
+    linear-gradient(180deg, #fff7ed 0%, #f7efe4 100%);
+}
+
+.page-shell--about .about-panel {
+  border-color: rgba(153, 87, 21, 0.14);
+  background: rgba(255, 248, 239, 0.92);
+}
+
+.page-shell--about .link-chip {
+  background: #7a3f18;
+}
+
+.page-shell--about .link-chip:hover {
+  background: #995724;
+}

@@ -1,0 +1,19 @@
+body {
+  background:
+    radial-gradient(circle at bottom right, rgba(255, 204, 126, 0.23), transparent 34%),
+    linear-gradient(180deg, #fff8f1 0%, #f3eadf 100%);
+}
+
+.runtime-shell--middleware .runtime-panel,
+.runtime-shell--middleware .runtime-card {
+  border-color: rgba(112, 74, 30, 0.12);
+  box-shadow: 0 16px 45px rgba(112, 74, 30, 0.1);
+}
+
+.runtime-shell--middleware .runtime-link {
+  background: #704a1e;
+}
+
+.runtime-shell--middleware .runtime-link:hover {
+  background: #8a5d27;
+}

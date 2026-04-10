@@ -1,0 +1,20 @@
+body {
+  background:
+    radial-gradient(circle at bottom right, rgba(255, 205, 138, 0.26), transparent 36%),
+    linear-gradient(180deg, #fffaf0 0%, #f6ead7 100%);
+}
+
+.post-shell .cache-panel,
+.post-shell .post-card {
+  border-color: rgba(128, 86, 33, 0.18);
+  background: rgba(255, 251, 244, 0.9);
+}
+
+.post-shell .cache-link {
+  margin-top: 1.75rem;
+  background: #805621;
+}
+
+.post-shell .cache-link:hover {
+  background: #9c6a2a;
+}

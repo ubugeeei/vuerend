@@ -1,0 +1,119 @@
+:root {
+  color: #132746;
+  background:
+    radial-gradient(circle at top right, rgba(126, 193, 255, 0.24), transparent 34%),
+    linear-gradient(180deg, #f2f8ff 0%, #e7eef7 100%);
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+.edge-shell {
+  width: min(960px, calc(100vw - 2rem));
+  margin: 0 auto;
+  padding: 4.5rem 0 5rem;
+}
+
+.edge-hero,
+.edge-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.edge-eyebrow {
+  margin: 0 0 0.8rem;
+  color: #4574a6;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.edge-hero h1 {
+  margin: 0;
+  font-size: clamp(2.7rem, 7vw, 4.9rem);
+  line-height: 0.95;
+}
+
+.edge-lede,
+.edge-card p,
+.edge-metrics dd {
+  color: #36516f;
+  line-height: 1.75;
+}
+
+.edge-panel,
+.edge-card {
+  padding: 1.35rem;
+  border: 1px solid rgba(19, 39, 70, 0.09);
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 16px 45px rgba(77, 111, 153, 0.12);
+}
+
+.edge-panel h2,
+.edge-card h2 {
+  margin: 0 0 0.6rem;
+  font-size: 1.2rem;
+}
+
+.edge-links {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.6rem;
+}
+
+.edge-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.9rem;
+  padding: 0 1rem;
+  border-radius: 999px;
+  background: #132746;
+  color: #f6fbff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.edge-link:hover {
+  background: #1d3d6c;
+}
+
+.edge-metrics {
+  margin: 0;
+}
+
+.edge-metrics div + div {
+  margin-top: 0.85rem;
+}
+
+.edge-metrics dt {
+  color: #4574a6;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.edge-metrics dd {
+  margin: 0.25rem 0 0;
+}
+
+@media (min-width: 760px) {
+  .edge-hero,
+  .edge-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

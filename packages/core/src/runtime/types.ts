@@ -14,6 +14,21 @@ export interface JsonObject {
   [key: string]: JsonValue;
 }
 
+/** Mutable request-scoped storage shared across middleware and route hooks. */
+export type RequestState = Record<string, unknown>;
+
+/** Attribute bag used by document head tags such as `meta` and `link`. */
+export type HeadTagAttributes = Record<string, string | undefined>;
+
+/** A rendered `<meta>` tag descriptor. */
+export type HeadMeta = HeadTagAttributes;
+
+/** A rendered `<link>` tag descriptor. */
+export type HeadLink = HeadTagAttributes;
+
+/** A rendered `<script>` tag descriptor. */
+export type HeadScript = HeadTagAttributes & { children?: string };
+
 type Simplify<T> = {
   [Key in keyof T]: T[Key];
 } & {};
@@ -63,6 +78,7 @@ export interface RouteContext<Path extends string = string> {
   url: URL;
   params: RouteParams<Path>;
   query: URLSearchParams;
+  state: RequestState;
   waitUntil(this: void, promise: Promise<unknown>): void;
   platform?: unknown;
   env?: unknown;
@@ -72,12 +88,19 @@ export interface RouteContext<Path extends string = string> {
 export interface RouteHead {
   title?: string;
   lang?: string;
-  meta?: Array<Record<string, string>>;
-  links?: Array<Record<string, string>>;
-  scripts?: Array<Record<string, string> & { children?: string }>;
+  head?: string;
+  meta?: HeadMeta[];
+  links?: HeadLink[];
+  stylesheets?: string[];
+  scripts?: HeadScript[];
   htmlAttrs?: Record<string, string>;
   bodyAttrs?: Record<string, string>;
 }
+
+/** Resolves the document head for a route either statically or per request. */
+export type RouteHeadResolver<Props = unknown, Path extends string = string> =
+  | RouteHead
+  | ((context: RouteContext<Path>, props: Props) => Awaitable<RouteHead | undefined>);
 
 /**
  * Controls how a route is rendered and cached.
@@ -112,7 +135,7 @@ export interface RouteDefinition<
   name?: string;
   component: ServerComponent<TComponent>;
   getProps?: (context: RouteContext<Path>) => Awaitable<Props>;
-  head?: (context: RouteContext<Path>, props: Props) => Awaitable<RouteHead | undefined>;
+  head?: RouteHeadResolver<Props, Path>;
   render?: RouteRenderOptions<Props, Path>;
   prerender?: string[] | ((baseUrl: URL) => Awaitable<string[]>);
   status?: number | ((context: RouteContext<Path>, props: Props) => Awaitable<number>);
@@ -124,7 +147,6 @@ export type AnyRouteDefinition = RouteDefinition<string, Component, any>;
 /** Shared document defaults applied to every rendered page. */
 export interface DocumentConfig extends RouteHead {
   titleTemplate?: string | ((title: string | undefined) => string);
-  head?: string;
   bodyOpen?: string;
   bodyClose?: string;
 }
@@ -135,6 +157,7 @@ export interface VuerendApp<
 > {
   routes: Routes;
   document?: DocumentConfig;
+  middleware?: RequestMiddleware[];
 }
 
 /**
@@ -224,10 +247,30 @@ export interface CreateRequestHandlerOptions {
 
 /** Extra runtime data supplied by adapters while handling a request. */
 export interface RequestHandlerContext {
+  state?: RequestState;
   waitUntil?(this: void, promise: Promise<unknown>): void;
   platform?: unknown;
   env?: unknown;
 }
+
+/** Request context visible inside middleware after normalization. */
+export interface MiddlewareContext extends Omit<RequestHandlerContext, "state" | "waitUntil"> {
+  state: RequestState;
+  waitUntil(this: void, promise: Promise<unknown>): void;
+}
+
+/** Invokes the next middleware or the final route handler. */
+export type RequestMiddlewareNext = (
+  request?: Request,
+  context?: RequestHandlerContext,
+) => Promise<Response>;
+
+/** Runs before route resolution and may short-circuit or decorate the response. */
+export type RequestMiddleware = (
+  request: Request,
+  context: MiddlewareContext,
+  next: RequestMiddlewareNext,
+) => Awaitable<Response>;
 
 /**
  * A fetch-compatible request handler produced by `createRequestHandler()`.

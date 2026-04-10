@@ -1,6 +1,7 @@
 import { defineComponent } from "vue";
 import { describe, expectTypeOf, it } from "vitest";
-import { defineIsland, defineRoute } from "../src/runtime";
+import { useClientState } from "../src/client";
+import { defineApp, defineIsland, defineRoute } from "../src/runtime";
 
 describe("type safety", () => {
   it("infers params from the route path", () => {
@@ -51,5 +52,66 @@ describe("type safety", () => {
       // @ts-expect-error routes must render server components, not islands
       component: CounterIsland,
     });
+  });
+
+  it("accepts static route head objects", () => {
+    const Page = defineComponent({});
+
+    defineRoute({
+      path: "/",
+      component: Page,
+      head: {
+        title: "Home",
+        meta: [{ property: "og:title", content: "Home Page" }],
+        stylesheets: ["/assets/app.css"],
+      },
+    });
+  });
+
+  it("exposes request state inside route hooks", () => {
+    const Page = defineComponent({});
+
+    defineRoute({
+      path: "/",
+      component: Page,
+      getProps(context) {
+        expectTypeOf(context.state).toEqualTypeOf<Record<string, unknown>>();
+        return {};
+      },
+    });
+  });
+
+  it("contextually types middleware definitions", () => {
+    const Page = defineComponent({});
+
+    defineApp({
+      middleware: [
+        async (request, context, next) => {
+          expectTypeOf(request).toEqualTypeOf<Request>();
+          expectTypeOf(context.state).toEqualTypeOf<Record<string, unknown>>();
+          return next();
+        },
+      ],
+      routes: [
+        defineRoute({
+          path: "/",
+          component: Page,
+        }),
+      ],
+    });
+  });
+
+  it("infers the client state ref value type", () => {
+    const counter = useClientState<number>("counter", 0);
+    const profile = useClientState<{ name: string; theme: string }>("profile", {
+      name: "Ada",
+      theme: "light",
+    });
+
+    expectTypeOf(counter.value).toEqualTypeOf<number>();
+    expectTypeOf(profile.value).toEqualTypeOf<{
+      name: string;
+      theme: string;
+    }>();
   });
 });
