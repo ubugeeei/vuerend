@@ -1,6 +1,11 @@
 import { defineComponent } from "vue";
 import { CounterIsland, SignupIsland } from "../islands";
-import { launchFaq, launchHighlights, launchProofStrip, launchStoryCards } from "../data/launch-week";
+import {
+  launchFaq,
+  launchHighlights,
+  launchProofStrip,
+  launchStoryCards,
+} from "../data/launch-week";
 
 export default defineComponent({
   name: "LaunchHomeRoute",
@@ -15,9 +20,9 @@ export default defineComponent({
               interactivity.
             </h1>
             <p class="lede">
-              This example is for product launches, conferences, and waitlist pages. The hero,
-              proof points, and FAQ stay as server-rendered HTML, while the seat estimator and
-              signup flow hydrate as isolated islands.
+              This example is for product launches, conferences, and waitlist pages. The hero, proof
+              points, and FAQ stay as server-rendered HTML, while the seat estimator and signup flow
+              hydrate as isolated islands.
             </p>
             <div class="cta-row">
               <a class="primary-link" href="/pricing">
@@ -61,9 +66,9 @@ export default defineComponent({
             <p class="eyebrow">Visible hydration</p>
             <h2>Interactive spot one: workshop seat estimator</h2>
             <p>
-              This island is SSR-rendered so it appears in the initial HTML, then hydrates only
-              when it becomes visible. That keeps interactivity narrow without hiding useful
-              capacity information behind JavaScript.
+              This island is SSR-rendered so it appears in the initial HTML, then hydrates only when
+              it becomes visible. That keeps interactivity narrow without hiding useful capacity
+              information behind JavaScript.
             </p>
           </div>
           <CounterIsland initial={14} label="Workshop seats remaining" />

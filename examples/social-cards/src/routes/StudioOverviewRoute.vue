@@ -20,8 +20,12 @@
         <h2>What this example proves</h2>
         <ul class="cards-list">
           <li>The page and the social card can share the same route metadata.</li>
-          <li>The social card is authored as a Vue SFC, not as a separate image template language.</li>
-          <li>Chromium capture stays an explicit runtime option instead of leaking into every route.</li>
+          <li>
+            The social card is authored as a Vue SFC, not as a separate image template language.
+          </li>
+          <li>
+            Chromium capture stays an explicit runtime option instead of leaking into every route.
+          </li>
         </ul>
       </aside>
     </section>

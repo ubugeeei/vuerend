@@ -19,6 +19,7 @@ const packageDirectories = [
 const stableReleaseKinds = new Set(["major", "minor", "patch"]);
 const prereleaseKinds = new Set(["alpha", "beta", "rc"]);
 const releaseCheckTargets = [
+  ".github/workflows",
   "package.json",
   "pnpm-workspace.yaml",
   "README.md",

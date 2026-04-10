@@ -21,15 +21,15 @@ pnpm exec vite dev
 
 ## Example Index
 
-| Directory           | Best For                                          | Why It Exists                                                                                                        |
-| ------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Directory           | Best For                                          | Why It Exists                                                                                                       |
+| ------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | `explicit-routes`   | handbooks, policy hubs, small docs sites          | Shows a Zero JavaScript-first MPA where explicit routes, metadata, and a Vue-authored social card all stay visible. |
-| `secure-islands`    | launch sites, waitlists, campaign pages           | Shows how to keep the page static and hydrate only the estimator and signup flow.                                    |
-| `mixed-sfc-jsx`     | buying guides, catalogs, editorial commerce pages | Shows SFC pages and JSX islands sharing a saved shortlist across full page loads.                                    |
-| `isr-cache`         | release notes, changelogs, newsroom homepages     | Shows an ISR landing page next to fully prerendered long-tail entries.                                               |
-| `node-srvx`         | internal tools and support desks on Node          | Shows middleware, request-scoped state, and a traditional Node process entry.                                        |
-| `cloudflare-worker` | edge-delivered status pages and docs mirrors      | Shows the same explicit-route app model packaged for Cloudflare Workers.                                             |
-| `social-cards`      | publisher and marketing workflows                 | Shows dynamic social cards authored as Vue SFCs and rendered through Chromium.                                       |
+| `secure-islands`    | launch sites, waitlists, campaign pages           | Shows how to keep the page static and hydrate only the estimator and signup flow.                                   |
+| `mixed-sfc-jsx`     | buying guides, catalogs, editorial commerce pages | Shows SFC pages and JSX islands sharing a saved shortlist across full page loads.                                   |
+| `isr-cache`         | release notes, changelogs, newsroom homepages     | Shows an ISR landing page next to fully prerendered long-tail entries.                                              |
+| `node-srvx`         | internal tools and support desks on Node          | Shows middleware, request-scoped state, and a traditional Node process entry.                                       |
+| `cloudflare-worker` | edge-delivered status pages and docs mirrors      | Shows the same explicit-route app model packaged for Cloudflare Workers.                                            |
+| `social-cards`      | publisher and marketing workflows                 | Shows dynamic social cards authored as Vue SFCs and rendered through Chromium.                                      |
 
 ## Reading Order
 

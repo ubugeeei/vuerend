@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    tags-ignore:
+      - "v*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  packages:
+    name: Packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check release files
+        run: >-
+          pnpm exec vp check --no-lint
+          .github/workflows
+          package.json
+          pnpm-workspace.yaml
+          README.md
+          scripts
+          packages/core/package.json
+          packages/core/src
+          packages/core/vite.config.ts
+          packages/node/package.json
+          packages/node/src
+          packages/node/vite.config.ts
+          packages/bun/package.json
+          packages/bun/src
+          packages/bun/vite.config.ts
+          packages/deno/package.json
+          packages/deno/src
+          packages/deno/vite.config.ts
+          packages/cloudflare/package.json
+          packages/cloudflare/src
+          packages/cloudflare/vite.config.ts
+          packages/service-worker/package.json
+          packages/service-worker/src
+          packages/service-worker/vite.config.ts
+
+      - name: Run tests
+        run: pnpm exec vp test run
+
+      - name: Pack packages
+        run: pnpm exec vp pack
+
+  examples:
+    name: Examples
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check example source files
+        run: >-
+          pnpm exec vp check --no-lint
+          README.md
+          packages/core/README.md
+          examples/README.md
+          examples/*/README.md
+          examples/*/src
+          examples/shared
+
+      - name: Build examples
+        run: node ./scripts/build-examples.mjs

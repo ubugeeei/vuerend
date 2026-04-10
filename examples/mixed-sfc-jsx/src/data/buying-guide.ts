@@ -24,7 +24,7 @@ export const shortlistWhyPoints = [
 export const shortlistCards = [
   {
     title: "Shared browser state",
-    body: 'The shortlist island below uses `useClientState()`. Save a few picks here, go back home, and the value stays in sync for the tab.',
+    body: "The shortlist island below uses `useClientState()`. Save a few picks here, go back home, and the value stays in sync for the tab.",
   },
   {
     title: "Another tiny island",

@@ -60,6 +60,7 @@ From the repo root, use `vp` for the packages:
 vp check
 vp test
 vp pack
+node ./scripts/build-examples.mjs
 vp run release patch
 ```
 

@@ -23,10 +23,7 @@ export default defineComponent({
         <section class="pricing-grid">
           {launchPrograms.map((program) => (
             <article
-              class={[
-                "pricing-card",
-                program.featured ? "pricing-card--featured" : "",
-              ]}
+              class={["pricing-card", program.featured ? "pricing-card--featured" : ""]}
               key={program.title}
             >
               <h2>{program.title}</h2>

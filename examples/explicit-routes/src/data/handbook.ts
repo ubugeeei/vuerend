@@ -50,6 +50,5 @@ export const handbookPrinciples: HandbookFeature[] = [
 export const handbookSocialCard = {
   eyebrow: "Handbook snapshot",
   title: "Team Handbook",
-  description:
-    "Onboarding, policy, and release guidance published as Vue pages and social cards.",
+  description: "Onboarding, policy, and release guidance published as Vue pages and social cards.",
 } as const;
