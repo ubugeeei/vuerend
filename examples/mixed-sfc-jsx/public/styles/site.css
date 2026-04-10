@@ -1,0 +1,168 @@
+:root {
+  color: #14311f;
+  background:
+    radial-gradient(circle at top left, rgba(123, 221, 172, 0.22), transparent 32%),
+    linear-gradient(180deg, #f3fbf6 0%, #e8f4ed 100%);
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font: inherit;
+}
+
+code {
+  font-family:
+    "SFMono-Regular", ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace;
+  font-size: 0.95em;
+}
+
+.mixed-shell {
+  width: min(980px, calc(100vw - 2rem));
+  margin: 0 auto;
+  padding: 4.5rem 0 5rem;
+}
+
+.mixed-hero,
+.mixed-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.mixed-eyebrow {
+  margin: 0 0 0.75rem;
+  color: #3f6a52;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.mixed-hero h1 {
+  margin: 0;
+  font-size: clamp(2.7rem, 7vw, 4.9rem);
+  line-height: 0.95;
+}
+
+.mixed-lede,
+.mixed-card p,
+.mixed-panel li,
+.reading-copy,
+.reading-source {
+  color: #30513f;
+  line-height: 1.75;
+}
+
+.mixed-link-row,
+.reading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.mixed-link,
+.mixed-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.9rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 999px;
+  background: #14311f;
+  color: #f6fff9;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.mixed-link:hover,
+.mixed-button:hover {
+  background: #1d4930;
+}
+
+.mixed-button--ghost {
+  background: rgba(20, 49, 31, 0.08);
+  color: #14311f;
+}
+
+.mixed-button--ghost:hover {
+  background: rgba(20, 49, 31, 0.14);
+}
+
+.mixed-panel,
+.mixed-card,
+.reading-panel {
+  padding: 1.35rem;
+  border: 1px solid rgba(20, 49, 31, 0.09);
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: 0 16px 45px rgba(60, 99, 76, 0.12);
+}
+
+.mixed-panel h2,
+.mixed-card h2,
+.reading-panel h2 {
+  margin: 0 0 0.6rem;
+  font-size: 1.2rem;
+}
+
+.mixed-list {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.accent-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.6rem;
+  padding: 0 0.95rem;
+  border: 1px solid rgba(20, 49, 31, 0.12);
+  border-radius: 999px;
+  background: rgba(20, 49, 31, 0.05);
+  color: #14311f;
+  cursor: pointer;
+}
+
+.accent-badge--active {
+  background: #14311f;
+  color: #f6fff9;
+}
+
+.accent-badge__dot {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.reading-total {
+  margin: 1rem 0 0;
+  color: #14311f;
+  font-size: clamp(2.1rem, 6vw, 3.4rem);
+  font-weight: 800;
+}
+
+@media (min-width: 760px) {
+  .mixed-hero {
+    grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.9fr);
+  }
+
+  .mixed-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

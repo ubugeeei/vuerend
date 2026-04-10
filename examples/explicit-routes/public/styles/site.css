@@ -1,0 +1,126 @@
+:root {
+  color: #112033;
+  background:
+    radial-gradient(circle at top, rgba(122, 176, 255, 0.35), transparent 42%),
+    linear-gradient(180deg, #f5f7fb 0%, #edf2f8 100%);
+  font-family:
+    "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+a {
+  color: inherit;
+}
+
+code {
+  font-family:
+    "SFMono-Regular", ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace;
+  font-size: 0.95em;
+}
+
+.page-shell {
+  width: min(980px, calc(100vw - 2rem));
+  margin: 0 auto;
+  padding: 4.5rem 0 5rem;
+}
+
+.hero-grid,
+.card-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.75rem;
+  color: #41607f;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.page-shell h1 {
+  margin: 0;
+  font-size: clamp(2.8rem, 8vw, 4.8rem);
+  line-height: 0.95;
+}
+
+.lede,
+.feature-card p,
+.manifest-panel p,
+.about-panel li {
+  color: #324a64;
+  line-height: 1.75;
+}
+
+.feature-card,
+.about-panel,
+.manifest-panel {
+  padding: 1.35rem;
+  border: 1px solid rgba(17, 32, 51, 0.08);
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 20px 50px rgba(80, 99, 125, 0.12);
+}
+
+.feature-card h2,
+.about-panel h2,
+.manifest-panel h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+}
+
+.feature-card--hero {
+  min-height: 100%;
+}
+
+.feature-list {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.link-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.link-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.8rem;
+  padding: 0 1rem;
+  border-radius: 999px;
+  background: #112033;
+  color: #f8fbff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.link-chip:hover {
+  background: #193152;
+}
+
+.manifest-panel {
+  margin-top: 2rem;
+}
+
+@media (min-width: 760px) {
+  .hero-grid {
+    grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.9fr);
+  }
+
+  .card-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

@@ -1,0 +1,37 @@
+body {
+  background:
+    radial-gradient(circle at bottom right, rgba(255, 191, 126, 0.24), transparent 34%),
+    linear-gradient(180deg, #fffaf1 0%, #f2ecdf 100%);
+}
+
+.mixed-shell--library .mixed-panel,
+.mixed-shell--library .mixed-card,
+.mixed-shell--library .reading-panel {
+  border-color: rgba(116, 74, 30, 0.12);
+  box-shadow: 0 16px 45px rgba(116, 74, 30, 0.1);
+}
+
+.mixed-shell--library .mixed-link,
+.mixed-shell--library .mixed-button {
+  background: #744a1e;
+}
+
+.mixed-shell--library .mixed-link:hover,
+.mixed-shell--library .mixed-button:hover {
+  background: #8f5b25;
+}
+
+.mixed-shell--library .mixed-button--ghost {
+  background: rgba(116, 74, 30, 0.08);
+  color: #4d3318;
+}
+
+.mixed-shell--library .accent-badge {
+  border-color: rgba(116, 74, 30, 0.14);
+  color: #4d3318;
+}
+
+.mixed-shell--library .accent-badge--active {
+  background: #744a1e;
+  color: #fff8ef;
+}

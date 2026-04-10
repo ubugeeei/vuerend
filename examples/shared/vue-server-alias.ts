@@ -12,21 +12,39 @@ const serviceWorkerRoot = resolve(
 const bunRoot = resolve(fileURLToPath(new URL("../../packages/bun", import.meta.url)));
 const denoRoot = resolve(fileURLToPath(new URL("../../packages/deno", import.meta.url)));
 
-export function vueServerAliases(): Record<string, string> {
-  return {
-    "@vue-server/core": resolve(coreRoot, "src/index.ts"),
-    "@vue-server/core/vite": resolve(coreRoot, "src/vite.ts"),
-    "@vue-server/core/runtime": resolve(coreRoot, "src/runtime.ts"),
-    "@vue-server/core/client": resolve(coreRoot, "src/client.ts"),
-    "@vue-server/core/adapters/node": resolve(coreRoot, "src/adapters/node.ts"),
-    "@vue-server/core/adapters/bun": resolve(coreRoot, "src/adapters/bun.ts"),
-    "@vue-server/core/adapters/deno": resolve(coreRoot, "src/adapters/deno.ts"),
-    "@vue-server/core/adapters/cloudflare": resolve(coreRoot, "src/adapters/cloudflare.ts"),
-    "@vue-server/core/adapters/service-worker": resolve(coreRoot, "src/adapters/service-worker.ts"),
-    "@vue-server/node": resolve(nodeRoot, "src/index.ts"),
-    "@vue-server/cloudflare": resolve(cloudflareRoot, "src/index.ts"),
-    "@vue-server/service-worker": resolve(serviceWorkerRoot, "src/index.ts"),
-    "@vue-server/bun": resolve(bunRoot, "src/index.ts"),
-    "@vue-server/deno": resolve(denoRoot, "src/index.ts"),
-  };
+export function vueServerAliases(): Array<{ find: string; replacement: string }> {
+  return [
+    { find: "@vue-server/core/vite", replacement: resolve(coreRoot, "src/vite.ts") },
+    { find: "@vue-server/core/runtime", replacement: resolve(coreRoot, "src/runtime.ts") },
+    { find: "@vue-server/core/client", replacement: resolve(coreRoot, "src/client.ts") },
+    {
+      find: "@vue-server/core/adapters/node",
+      replacement: resolve(coreRoot, "src/adapters/node.ts"),
+    },
+    {
+      find: "@vue-server/core/adapters/bun",
+      replacement: resolve(coreRoot, "src/adapters/bun.ts"),
+    },
+    {
+      find: "@vue-server/core/adapters/deno",
+      replacement: resolve(coreRoot, "src/adapters/deno.ts"),
+    },
+    {
+      find: "@vue-server/core/adapters/cloudflare",
+      replacement: resolve(coreRoot, "src/adapters/cloudflare.ts"),
+    },
+    {
+      find: "@vue-server/core/adapters/service-worker",
+      replacement: resolve(coreRoot, "src/adapters/service-worker.ts"),
+    },
+    { find: "@vue-server/core", replacement: resolve(coreRoot, "src/index.ts") },
+    { find: "@vue-server/node", replacement: resolve(nodeRoot, "src/index.ts") },
+    { find: "@vue-server/cloudflare", replacement: resolve(cloudflareRoot, "src/index.ts") },
+    {
+      find: "@vue-server/service-worker",
+      replacement: resolve(serviceWorkerRoot, "src/index.ts"),
+    },
+    { find: "@vue-server/bun", replacement: resolve(bunRoot, "src/index.ts") },
+    { find: "@vue-server/deno", replacement: resolve(denoRoot, "src/index.ts") },
+  ];
 }

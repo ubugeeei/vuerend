@@ -43,7 +43,11 @@ export async function renderRouteResponse(
   const root = createRenderRoot(route.component, props, state);
   const vueApp = createSSRApp(root);
   const body = await renderToString(vueApp);
-  const head = route.head ? await route.head(routeContext, props) : undefined;
+  const head = route.head
+    ? typeof route.head === "function"
+      ? await route.head(routeContext, props)
+      : route.head
+    : undefined;
   const html = renderDocument({
     appDocument: app.document,
     body,
@@ -79,6 +83,7 @@ export function createRouteContext(
     url,
     params,
     query: url.searchParams,
+    state: context.state ?? {},
     waitUntil: (promise) => {
       context.waitUntil?.(promise);
     },

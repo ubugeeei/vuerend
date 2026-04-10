@@ -90,6 +90,97 @@ export default defineIslands([CounterIsland]);
 - No client router is included.
 - Route params come from the server request path, and pages can resolve props with `getProps(context)`.
 
+## Document Head
+
+- `defineApp({ document })` sets app-wide defaults for titles, meta tags, and shared assets.
+- `defineRoute({ head })` accepts either a static object or a function when the head depends on the request or resolved props.
+- Use `meta` for SEO and Open Graph tags, and `stylesheets` for shared CSS files you want injected as `<link rel="stylesheet">`.
+
+```ts
+import HomePage from "./pages/HomePage";
+import { defineApp, defineRoute } from "@vue-server/core";
+
+export default defineApp({
+  document: {
+    title: "Example",
+    titleTemplate: "%s | Vue Server",
+    meta: [{ name: "description", content: "Shared site description" }],
+    stylesheets: ["/styles/site.css"],
+  },
+  routes: [
+    defineRoute({
+      path: "/",
+      component: HomePage,
+      head: {
+        title: "Home",
+        meta: [
+          { property: "og:title", content: "Home" },
+          { property: "og:type", content: "website" },
+        ],
+        stylesheets: ["/styles/home.css"],
+      },
+    }),
+  ],
+});
+```
+
+## Middleware
+
+- `defineApp({ middleware })` runs fetch-style middleware before route matching and rendering.
+- Middleware can short-circuit requests, rewrite the request passed to `next()`, or decorate the response after `await next()`.
+- Use `context.state` to share request-scoped data with `getProps()`, `head()`, and other route hooks.
+
+```ts
+import HomePage from "./pages/HomePage";
+import { defineApp, defineRoute } from "@vue-server/core";
+
+export default defineApp({
+  middleware: [
+    async (request, context, next) => {
+      context.state.requestPath = new URL(request.url).pathname;
+      const response = await next();
+      response.headers.set("x-powered-by", "vue-server");
+      return response;
+    },
+  ],
+  routes: [
+    defineRoute({
+      path: "/",
+      component: HomePage,
+      getProps(context) {
+        return {
+          requestPath: String(context.state.requestPath ?? "/"),
+        };
+      },
+    }),
+  ],
+});
+```
+
+## Client State
+
+- `useClientState()` is for hydrated islands that need shared browser state in an MPA.
+- The default storage is `sessionStorage`, so state survives full page navigations within the same tab while keeping SSR request-local.
+- Import it from `@vue-server/core/client` inside interactive islands only. Server-only routes still ship no browser JavaScript.
+
+```ts
+import { defineComponent } from "vue";
+import { useClientState } from "@vue-server/core/client";
+
+export default defineComponent({
+  name: "ReadingListIsland",
+  setup() {
+    const count = useClientState("reading-list", 0);
+
+    return () => (
+      <button type="button" onClick={() => (count.value += 1)}>
+        saved books: {count.value}
+      </button>
+    );
+  },
+});
+```
+
 ## Rendering Strategies
 
 - `ssr`: render on demand
