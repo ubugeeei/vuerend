@@ -1,5 +1,6 @@
 import type vue from "@vitejs/plugin-vue";
 import type vueJsx from "@vitejs/plugin-vue-jsx";
+import type { PluginOption } from "vite";
 
 /**
  * Options for the Vuerend Vite plugin.
@@ -14,8 +15,12 @@ export interface VuerendPluginOptions {
     client?: string;
     server?: string;
   };
-  vue?: Parameters<typeof vue>[0];
-  jsx?: Parameters<typeof vueJsx>[0];
+  vue?: Parameters<typeof vue>[0] | false;
+  jsx?: Parameters<typeof vueJsx>[0] | false;
+  /** Override the default Vue SFC plugin. Useful for trying compiler alternatives such as Vize. */
+  vuePlugin?: PluginOption | PluginOption[] | false;
+  /** Override the default Vue JSX plugin. */
+  jsxPlugin?: PluginOption | PluginOption[] | false;
 }
 
 export interface ResolvedVuerendPluginOptions {

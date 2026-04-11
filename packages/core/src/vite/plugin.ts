@@ -25,6 +25,22 @@ import { loadVirtualModule, resolveVirtualId } from "./virtual.js";
  * the Vite v8 Environment API.
  */
 export function vuerend(options: VuerendPluginOptions): PluginOption[] {
+  const vuePlugins =
+    options.vuePlugin === false
+      ? []
+      : options.vuePlugin === undefined
+        ? options.vue === false
+          ? []
+          : vue(options.vue)
+        : options.vuePlugin;
+  const jsxPlugins =
+    options.jsxPlugin === false
+      ? []
+      : options.jsxPlugin === undefined
+        ? options.jsx === false
+          ? []
+          : vueJsx(options.jsx)
+        : options.jsxPlugin;
   const state: {
     clientAssets: ClientBuildAssets;
     config: ResolvedConfig | undefined;
@@ -178,5 +194,5 @@ export function vuerend(options: VuerendPluginOptions): PluginOption[] {
     },
   };
 
-  return [vue(options.vue), vueJsx(options.jsx), plugin];
+  return [vuePlugins, jsxPlugins, plugin].flat();
 }

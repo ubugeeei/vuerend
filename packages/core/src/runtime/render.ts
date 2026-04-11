@@ -177,7 +177,7 @@ function createHtmlHeaders(
   headers.set("content-type", "text/html; charset=utf-8");
 
   if (head?.title) {
-    headers.set("x-vuerend-title", head.title);
+    headers.set("x-vuerend-title", createHeaderSafeText(head.title));
   }
 
   if (islands.length > 0) {
@@ -198,10 +198,14 @@ function createImageHeaders(
   headers.set("x-vuerend-image-size", `${width}x${height}`);
 
   if (head?.title) {
-    headers.set("x-vuerend-title", head.title);
+    headers.set("x-vuerend-title", createHeaderSafeText(head.title));
   }
 
   return headers;
+}
+
+function createHeaderSafeText(value: string): string {
+  return encodeURIComponent(value);
 }
 
 function defaultImageContentType(format: "png" | "jpeg"): string {

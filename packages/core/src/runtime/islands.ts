@@ -82,14 +82,11 @@ export function defineIsland(
         const host = definition.ssr
           ? h("div", hostAttributes, [h(definition.component as never, mergeProps(props, attrs))])
           : h("div", hostAttributes);
-        const payload = h(
-          "script",
-          {
-            type: "application/json",
-            "data-vs-island-props": islandRecord.instanceId,
-          },
-          escapeScriptJson(JSON.stringify(serializedProps)),
-        );
+        const payload = h("script", {
+          type: "application/json",
+          "data-vs-island-props": islandRecord.instanceId,
+          innerHTML: escapeScriptJson(JSON.stringify(serializedProps)),
+        });
 
         return h(Fragment, [host, payload]);
       };
