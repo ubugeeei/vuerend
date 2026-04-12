@@ -64,11 +64,9 @@ export default defineApp({
 
 ```ts
 // src/islands.ts
-import CounterIslandView from "./islands/CounterIslandView";
 import { defineIsland, defineIslands } from "@vuerend/core";
 
-export const CounterIsland = defineIsland("counter", {
-  component: CounterIslandView,
+export const CounterIsland = defineIsland<{ count: number }>("counter", {
   load: () => import("./islands/CounterIslandView.loader"),
   hydrate: "visible",
 });
@@ -81,8 +79,33 @@ export default defineIslands([CounterIsland]);
 - Zero JavaScript is the starting point. Regular Vue components are server components by default and ship no browser JavaScript.
 - Route components stay server-only. Render `defineIsland()` components inside them when a narrow client boundary is needed.
 - `defineIsland()` marks an explicit boundary and emits a small JSON payload plus a targeted hydration root.
+- Prefer `load()`-only island definitions so the client entry can stay small and the island component can live in its own async chunk.
+- SSR-rendered islands can wake hydration on an early button click or form submit, then replay that first interaction after the client component mounts.
+- Vue 3.6 Vapor islands can use the `vapor` plugin option to hydrate through the Vapor runtime.
 - `ssr: false` creates a client-only island.
 - Island props must be plain JSON, and slots are intentionally rejected to keep the serialization surface small and predictable.
+
+## Vue Vapor
+
+Vuerend has an opt-in Vapor hydration entry for Vue 3.6+ apps. Use it when the client island registry is made of SFCs authored with `<script setup vapor>` and you want to experiment with smaller island JavaScript:
+
+```ts
+// vite.config.ts
+import { defineConfig } from "vite";
+import { vuerend } from "@vuerend/core/vite";
+
+export default defineConfig({
+  plugins: [
+    vuerend({
+      app: "./src/app.ts",
+      islands: "./src/islands.ts",
+      vapor: true,
+    }),
+  ],
+});
+```
+
+`vapor: true` hydrates islands with Vue's `createVaporSSRApp`. For a gradual migration where Vapor and regular Vue components are intentionally mixed inside the same island tree, use `vapor: "interop"` or `vapor: { mode: "interop" }`. Interop is safer for mixed trees, but it can include both runtimes and reduce the bundle-size win.
 
 ## Routing
 

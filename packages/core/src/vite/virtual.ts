@@ -3,6 +3,7 @@ import {
   PUBLIC_PACKAGE_NAME,
   RESOLVED_CLIENT_BUILD,
   RESOLVED_CLIENT_ENTRY,
+  RESOLVED_CLIENT_RUNTIME,
   RESOLVED_SERVER_ENTRY,
   VIRTUAL_CLIENT_BUILD,
   VIRTUAL_CLIENT_ENTRY,
@@ -10,7 +11,16 @@ import {
 } from "./constants.js";
 import type { ResolvedVuerendPluginOptions } from "./types.js";
 
-export function resolveVirtualId(id: string): string | undefined {
+export function resolveVirtualId(
+  id: string,
+  options?: { environment?: string | undefined; ssr?: boolean | undefined },
+): string | undefined {
+  const isServer = options?.environment ? options.environment === "server" : options?.ssr === true;
+
+  if (id === PUBLIC_PACKAGE_NAME && !isServer) {
+    return RESOLVED_CLIENT_RUNTIME;
+  }
+
   if (id === VIRTUAL_CLIENT_ENTRY) {
     return RESOLVED_CLIENT_ENTRY;
   }
@@ -36,10 +46,16 @@ export function loadVirtualModule(
       return "export {};";
     }
 
+    const hydrateModule = options.vapor
+      ? `${PUBLIC_PACKAGE_NAME}/client/vapor-hydrate`
+      : `${PUBLIC_PACKAGE_NAME}/client/hydrate`;
+    const hydrateExport = options.vapor ? "hydrateVaporIslands" : "hydrateIslands";
+    const hydrateArgs = options.vapor ? `islands, ${JSON.stringify(options.vapor)}` : "islands";
+
     return [
       `import islands from ${JSON.stringify(options.islands)};`,
-      `import { hydrateIslands } from ${JSON.stringify(`${PUBLIC_PACKAGE_NAME}/client`)};`,
-      "void hydrateIslands(islands);",
+      `import { ${hydrateExport} } from ${JSON.stringify(hydrateModule)};`,
+      `void ${hydrateExport}(${hydrateArgs});`,
     ].join("\n");
   }
 
@@ -53,7 +69,13 @@ export function loadVirtualModule(
       '  typeof appModule.requestHandlerOptions === "function"',
       "    ? await appModule.requestHandlerOptions({ assets })",
       "    : (appModule.requestHandlerOptions ?? {});",
-      "const handler = createRequestHandler({ app, assets, ...runtimeOptions });",
+      `const vapor = ${JSON.stringify(options.vapor)};`,
+      "const handler = createRequestHandler({",
+      "  app,",
+      "  assets,",
+      "  ...runtimeOptions,",
+      "  ...(vapor ? { vapor } : {}),",
+      "});",
       "export const fetch = handler;",
       "export const cache = handler.cache;",
       "export const listPrerenderRoutes = () => handler.listPrerenderRoutes();",
@@ -65,6 +87,29 @@ export function loadVirtualModule(
 
   if (id === RESOLVED_CLIENT_BUILD) {
     return `export default ${JSON.stringify(clientAssets)};`;
+  }
+
+  if (id === RESOLVED_CLIENT_RUNTIME) {
+    return [
+      `export { useClientState } from ${JSON.stringify(`${PUBLIC_PACKAGE_NAME}/client`)};`,
+      "export function defineIsland(id, options) {",
+      "  const definition = Object.freeze({",
+      "    id,",
+      "    component: options.component,",
+      "    load: options.load,",
+      '    hydrate: options.hydrate ?? "load",',
+      "    media: options.media,",
+      "    ssr: options.ssr ?? true,",
+      "  });",
+      "  return { __vuerendIsland: definition };",
+      "}",
+      "export function defineIslands(islands) {",
+      "  return islands;",
+      "}",
+      "export function getIslandDefinition(island) {",
+      "  return island?.__vuerendIsland;",
+      "}",
+    ].join("\n");
   }
 
   return null;

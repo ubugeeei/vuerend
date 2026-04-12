@@ -1,9 +1,6 @@
-import SeatEstimatorIsland from "./islands/SeatEstimatorIsland";
-import SignupConciergeIsland from "./islands/SignupConciergeIsland.vue";
 import { defineIsland, defineIslands } from "@vuerend/core";
 
 export const CounterIsland = defineIsland<{ initial: number; label: string }>("counter-island", {
-  component: SeatEstimatorIsland,
   load: () => import("./islands/SeatEstimatorIsland.loader"),
   hydrate: "visible",
 });
@@ -13,7 +10,6 @@ export const SignupIsland = defineIsland<{
   buttonLabel: string;
   title: string;
 }>("signup-island", {
-  component: SignupConciergeIsland,
   load: () => import("./islands/SignupConciergeIsland.loader"),
   hydrate: "idle",
   ssr: false,

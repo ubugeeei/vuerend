@@ -1,6 +1,7 @@
 import type vue from "@vitejs/plugin-vue";
 import type vueJsx from "@vitejs/plugin-vue-jsx";
 import type { PluginOption } from "vite";
+import type { ResolvedVuerendVaporOptions, VuerendVaporOptions } from "../runtime/types.js";
 
 /**
  * Options for the Vuerend Vite plugin.
@@ -15,6 +16,8 @@ export interface VuerendPluginOptions {
     client?: string;
     server?: string;
   };
+  /** Enable Vue 3.6 Vapor hydration for client islands. */
+  vapor?: VuerendVaporOptions;
   vue?: Parameters<typeof vue>[0] | false;
   jsx?: Parameters<typeof vueJsx>[0] | false;
   /** Override the default Vue SFC plugin. Useful for trying compiler alternatives such as Vize. */
@@ -28,4 +31,5 @@ export interface ResolvedVuerendPluginOptions {
   islands?: string | undefined;
   clientOutDir: string;
   serverOutDir: string;
+  vapor?: ResolvedVuerendVaporOptions | undefined;
 }

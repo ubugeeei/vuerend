@@ -2,6 +2,7 @@ import { defineComponent } from "vue";
 import { describe, expectTypeOf, it } from "vitest";
 import { useClientState } from "../src/client";
 import { defineApp, defineImageRoute, defineIsland, defineRoute } from "../src/runtime";
+import type { VuerendPluginOptions } from "../src/vite";
 
 describe("type safety", () => {
   it("infers params from the route path", () => {
@@ -51,6 +52,22 @@ describe("type safety", () => {
       path: "/",
       // @ts-expect-error routes must render server components, not islands
       component: CounterIsland,
+    });
+  });
+
+  it("accepts islands that only provide a lazy loader", () => {
+    const CounterView = defineComponent({
+      props: {
+        count: {
+          required: true,
+          type: Number,
+        },
+      },
+    });
+
+    defineIsland<{ count: number }>("counter", {
+      load: async () => ({ default: CounterView }),
+      hydrate: "visible",
     });
   });
 
@@ -140,5 +157,18 @@ describe("type safety", () => {
       name: string;
       theme: string;
     }>();
+  });
+
+  it("accepts Vue Vapor island hydration options", () => {
+    const options = {
+      app: "./src/app.ts",
+      islands: "./src/islands.ts",
+      vapor: {
+        mode: "islands",
+        interop: false,
+      },
+    } satisfies VuerendPluginOptions;
+
+    expectTypeOf(options.vapor.mode).toEqualTypeOf<"islands">();
   });
 });

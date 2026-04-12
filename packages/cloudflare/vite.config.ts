@@ -13,6 +13,7 @@ export default defineConfig({
       index: "src/index.ts",
     },
     format: ["esm"],
-    sourcemap: true,
+    minify: true,
+    sourcemap: false,
   },
 });

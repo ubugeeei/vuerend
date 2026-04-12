@@ -1,5 +1,6 @@
 import {
   Fragment,
+  defineAsyncComponent,
   defineComponent,
   h,
   inject,
@@ -16,6 +17,7 @@ import type {
   IslandDefinition,
   JsonObject,
   JsonValue,
+  LoadedIslandModule,
   RenderedIsland,
   SerializableComponentProps,
 } from "./types.js";
@@ -41,9 +43,12 @@ export function defineIsland(
   id: string,
   options: DefineIslandOptions<Component>,
 ): AnyDefinedIsland {
+  const component =
+    options.component ??
+    defineAsyncComponent(async () => resolveLoadedIslandComponent(await options.load()));
   const definition: IslandDefinition<Component> = Object.freeze({
     id,
-    component: options.component,
+    component,
     load: options.load,
     hydrate: options.hydrate ?? "load",
     media: options.media,
@@ -111,6 +116,16 @@ export function getIslandDefinition<TComponent extends Component = Component>(
   return (island as AnyDefinedIsland | undefined)?.__vuerendIsland as
     | IslandDefinition<TComponent>
     | undefined;
+}
+
+function resolveLoadedIslandComponent<TComponent extends Component>(
+  loaded: LoadedIslandModule<TComponent>,
+): TComponent {
+  if (loaded && typeof loaded === "object" && "default" in loaded) {
+    return loaded.default;
+  }
+
+  return loaded;
 }
 
 /** Mutable state used to collect rendered islands during SSR. */

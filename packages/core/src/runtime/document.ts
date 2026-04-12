@@ -58,6 +58,7 @@ export function renderDocument(input: RenderDocumentInput): string {
     "link",
     dedupeLinkCollection([
       ...(document?.links ?? []),
+      ...createModulePreloadLinks(input.islandsRendered ? input.assets?.modulepreload : undefined),
       ...createStylesheetLinks(document?.stylesheets),
       ...(head?.links ?? []),
       ...createStylesheetLinks(head?.stylesheets),
@@ -228,6 +229,14 @@ function createStylesheetLinks(entries?: readonly string[]): HeadLink[] {
   }
 
   return entries.map((href) => ({ rel: "stylesheet", href }));
+}
+
+function createModulePreloadLinks(entries?: readonly string[]): HeadLink[] {
+  if (!entries?.length) {
+    return [];
+  }
+
+  return entries.map((href) => ({ rel: "modulepreload", href }));
 }
 
 function dedupeTagCollection<TEntry extends Record<string, string | undefined>>(

@@ -27,6 +27,7 @@ export {
   renderImageRouteResponse,
   renderRouteResponse,
 } from "./runtime/render.js";
+export { resolveVuerendVaporOptions } from "./runtime/vapor-options.js";
 export {
   createRouter,
   defineImageRoute,
@@ -66,6 +67,7 @@ export type {
   RequestHandlerRuntimeOptions,
   RequestState,
   RequestHandlerContext,
+  ResolvedVuerendVaporOptions,
   RouteContext,
   RouteDefinition,
   RouteHead,
@@ -77,5 +79,7 @@ export type {
   SerializableComponentProps,
   ServerComponent,
   VuerendApp,
+  VuerendVaporMode,
+  VuerendVaporOptions,
   VuerendRequestHandler,
 } from "./runtime/types.js";

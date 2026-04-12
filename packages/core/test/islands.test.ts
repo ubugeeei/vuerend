@@ -39,8 +39,7 @@ describe("islands", () => {
       },
     });
 
-    const CounterIsland = defineIsland("counter", {
-      component: CounterView,
+    const CounterIsland = defineIsland<{ count: number }>("counter", {
       load: async () => ({ default: CounterView }),
       hydrate: "visible",
     });
@@ -57,6 +56,7 @@ describe("islands", () => {
       }),
       assets: {
         entry: "/assets/vuerend-client.js",
+        modulepreload: ["/assets/vue.js"],
       },
     });
 
@@ -66,6 +66,7 @@ describe("islands", () => {
     expect(html).toContain('data-vs-component="counter"');
     expect(html).toContain('data-vs-hydrate="visible"');
     expect(html).toContain("count:2");
+    expect(html).toContain('rel="modulepreload" href="/assets/vue.js"');
     expect(html).toContain("/assets/vuerend-client.js");
   });
 

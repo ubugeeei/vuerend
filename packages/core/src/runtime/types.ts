@@ -192,7 +192,7 @@ export interface VuerendApp<
 export type LoadedIslandModule<TComponent extends Component> = TComponent | { default: TComponent };
 
 export interface DefineIslandOptions<TComponent extends Component = Component> {
-  component: TComponent;
+  component?: TComponent | undefined;
   load: () => Promise<LoadedIslandModule<TComponent>>;
   hydrate?: HydrationStrategy;
   media?: string | undefined;
@@ -202,7 +202,7 @@ export interface DefineIslandOptions<TComponent extends Component = Component> {
 /** Normalized island metadata attached to a defined island component. */
 export interface IslandDefinition<TComponent extends Component = Component> {
   id: string;
-  component: TComponent;
+  component: Component;
   load: () => Promise<LoadedIslandModule<TComponent>>;
   hydrate: HydrationStrategy;
   media?: string | undefined;
@@ -236,6 +236,28 @@ export interface RenderedIsland<Props extends JsonObject = JsonObject> {
 export interface ClientBuildAssets {
   entry?: string | undefined;
   css?: string[] | undefined;
+  modulepreload?: string[] | undefined;
+}
+
+export type VuerendVaporMode = "islands" | "interop";
+
+/** Options for using Vue 3.6 Vapor mode in client islands. */
+export type VuerendVaporOptions =
+  | boolean
+  | VuerendVaporMode
+  | {
+      /**
+       * `islands` hydrates each client island with `createVaporSSRApp`.
+       * `interop` hydrates with `createSSRApp` and installs `vaporInteropPlugin`.
+       */
+      mode?: VuerendVaporMode | undefined;
+      /** Install Vue's Vapor/VDOM interop plugin inside the Vapor island app. */
+      interop?: boolean | undefined;
+    };
+
+export interface ResolvedVuerendVaporOptions {
+  mode: VuerendVaporMode;
+  interop: boolean;
 }
 
 /** Input passed to an HTML-to-image renderer. */
@@ -289,6 +311,7 @@ export interface CreateRequestHandlerOptions {
   assets?: ClientBuildAssets;
   cache?: RenderCache;
   imageRenderer?: HtmlImageRenderer | undefined;
+  vapor?: VuerendVaporOptions | undefined;
 }
 
 /** Extra options supplied to `createRequestHandler()` outside the app definition. */

@@ -21,9 +21,12 @@ export default defineConfig({
       vite: "src/vite.ts",
       runtime: "src/runtime.ts",
       client: "src/client.ts",
+      "client/hydrate": "src/client/hydrate.ts",
+      "client/vapor-hydrate": "src/client/vapor-hydrate.ts",
     },
     format: ["esm"],
-    sourcemap: true,
+    minify: true,
+    sourcemap: false,
   },
   staged: {
     "*.{ts,tsx,vue,mts,cts,json,md}": "vp check --fix",

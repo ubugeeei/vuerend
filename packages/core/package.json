@@ -28,6 +28,14 @@
       "types": "./dist/client.d.mts",
       "import": "./dist/client.mjs"
     },
+    "./client/hydrate": {
+      "types": "./dist/client/hydrate.d.mts",
+      "import": "./dist/client/hydrate.mjs"
+    },
+    "./client/vapor-hydrate": {
+      "types": "./dist/client/vapor-hydrate.d.mts",
+      "import": "./dist/client/vapor-hydrate.mjs"
+    },
     "./package.json": "./package.json"
   },
   "publishConfig": {

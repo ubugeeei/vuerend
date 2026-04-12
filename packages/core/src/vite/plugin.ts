@@ -1,4 +1,5 @@
 import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import { NodeRequest, sendNodeResponse } from "srvx/node";
@@ -12,8 +13,9 @@ import {
   type Plugin,
 } from "vite";
 import type { ClientBuildAssets } from "../runtime/types.js";
-import { loadClientAssets, prerenderStaticRoutes } from "./build.js";
-import { DEV_CLIENT_ENTRY_URL } from "./constants.js";
+import { resolveVuerendVaporOptions } from "../runtime/vapor-options.js";
+import { loadClientAssets, minifyClientCssAssets, prerenderStaticRoutes } from "./build.js";
+import { DEV_CLIENT_ENTRY_URL, RESOLVED_CLIENT_RUNTIME } from "./constants.js";
 import { joinBase, shouldHandleRequest } from "./helpers.js";
 import type { ResolvedVuerendPluginOptions, VuerendPluginOptions } from "./types.js";
 import { loadVirtualModule, resolveVirtualId } from "./virtual.js";
@@ -25,6 +27,9 @@ import { loadVirtualModule, resolveVirtualId } from "./virtual.js";
  * the Vite v8 Environment API.
  */
 export function vuerend(options: VuerendPluginOptions): PluginOption[] {
+  const sourceRuntimeEntry = normalizePath(
+    fileURLToPath(new URL("../runtime.ts", import.meta.url)),
+  );
   const vuePlugins =
     options.vuePlugin === false
       ? []
@@ -46,18 +51,24 @@ export function vuerend(options: VuerendPluginOptions): PluginOption[] {
     config: ResolvedConfig | undefined;
     options: ResolvedVuerendPluginOptions;
   } = {
-    clientAssets: { entry: DEV_CLIENT_ENTRY_URL, css: [] as string[] },
+    clientAssets: {
+      entry: DEV_CLIENT_ENTRY_URL,
+      css: [] as string[],
+      modulepreload: [] as string[],
+    },
     config: undefined,
     options: {
       app: "",
       islands: undefined,
       clientOutDir: options.outDir?.client ?? "dist/client",
       serverOutDir: options.outDir?.server ?? "dist/server",
+      vapor: resolveVuerendVaporOptions(options.vapor),
     },
   };
 
   const plugin: Plugin = {
     name: "vuerend",
+    enforce: "pre",
     config(userConfig) {
       const root = userConfig.root ?? process.cwd();
       state.options.app = normalizePath(resolve(root, options.app));
@@ -78,10 +89,24 @@ export function vuerend(options: VuerendPluginOptions): PluginOption[] {
               outDir: state.options.clientOutDir,
               emptyOutDir: true,
               manifest: ".vite/manifest.json",
-              sourcemap: true,
+              cssMinify: "lightningcss",
+              minify: "oxc",
+              sourcemap: false,
               rolldownOptions: {
                 input: {
                   "vuerend-client": "virtual:vuerend/client-entry",
+                },
+                output: {
+                  comments: false,
+                  codeSplitting: {
+                    groups: [
+                      {
+                        name: "vue",
+                        test: /node_modules[\\/](?:@vue|vue)[\\/]/,
+                        priority: 10,
+                      },
+                    ],
+                  },
                 },
               },
             },
@@ -96,9 +121,11 @@ export function vuerend(options: VuerendPluginOptions): PluginOption[] {
             build: {
               copyPublicDir: false,
               emitAssets: false,
-              emptyOutDir: false,
+              emptyOutDir: true,
               outDir: state.options.serverOutDir,
-              sourcemap: true,
+              cssMinify: "lightningcss",
+              minify: "oxc",
+              sourcemap: false,
               ssr: true,
               rolldownOptions: {
                 external: ["playwright", "srvx/node"],
@@ -106,6 +133,7 @@ export function vuerend(options: VuerendPluginOptions): PluginOption[] {
                   server: "virtual:vuerend/server-entry",
                 },
                 output: {
+                  comments: false,
                   entryFileNames: "index.js",
                 },
               },
@@ -139,6 +167,7 @@ export function vuerend(options: VuerendPluginOptions): PluginOption[] {
       state.clientAssets = {
         entry: joinBase(config.base, DEV_CLIENT_ENTRY_URL),
         css: [],
+        modulepreload: [],
       };
     },
     configureServer(server) {
@@ -167,8 +196,18 @@ export function vuerend(options: VuerendPluginOptions): PluginOption[] {
         });
       };
     },
-    resolveId(id) {
-      return resolveVirtualId(id);
+    resolveId(id, _importer, options) {
+      const environment = (this as { environment?: { name?: string } }).environment;
+      const isServer = environment?.name ? environment.name === "server" : options.ssr === true;
+
+      if (!isServer && normalizePath(id) === sourceRuntimeEntry) {
+        return RESOLVED_CLIENT_RUNTIME;
+      }
+
+      return resolveVirtualId(id, {
+        environment: environment?.name,
+        ssr: options.ssr,
+      });
     },
     load(id) {
       return loadVirtualModule(id, state.options, state.clientAssets);
@@ -188,6 +227,7 @@ export function vuerend(options: VuerendPluginOptions): PluginOption[] {
       }
 
       await builder.build(clientEnvironment);
+      await minifyClientCssAssets(config, state.options.clientOutDir);
       state.clientAssets = await loadClientAssets(config, state.options.clientOutDir, config.base);
       await builder.build(serverEnvironment);
       await prerenderStaticRoutes(config, state.options);

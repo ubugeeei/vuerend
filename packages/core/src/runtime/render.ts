@@ -2,6 +2,8 @@ import { renderToString } from "@vue/server-renderer";
 import { createSSRApp } from "vue";
 import { renderDocument, renderImageDocument } from "./document.js";
 import { createIslandRenderState, createRenderRoot, getIslandDefinition } from "./islands.js";
+import { resolveVuerendVaporOptions } from "./vapor-options.js";
+import { installVaporInterop } from "./vapor.js";
 import type {
   AnyRouteDefinition,
   CreateRequestHandlerOptions,
@@ -38,7 +40,7 @@ export async function renderRouteResponse(
   routeContext: RouteContext,
   options: CreateRequestHandlerOptions,
 ): Promise<RenderedRouteResponse> {
-  const rendered = await resolveRouteOutput(route, routeContext);
+  const rendered = await resolveRouteOutput(route, routeContext, options);
   const html = renderDocument({
     appDocument: app.document,
     body: rendered.body,
@@ -79,7 +81,7 @@ export async function renderImageRouteResponse(
     );
   }
 
-  const rendered = await resolveRouteOutput(route, routeContext);
+  const rendered = await resolveRouteOutput(route, routeContext, options);
   const width = route.image.width ?? 1200;
   const height = route.image.height ?? 630;
   const format = route.image.format ?? "png";
@@ -135,6 +137,7 @@ export function createRouteContext(
 async function resolveRouteOutput(
   route: AnyRouteDefinition,
   routeContext: RouteContext,
+  options: CreateRequestHandlerOptions,
 ): Promise<ResolvedRouteOutput> {
   const island = getIslandDefinition(route.component);
 
@@ -148,6 +151,11 @@ async function resolveRouteOutput(
   const state = createIslandRenderState();
   const root = createRenderRoot(route.component, props, state);
   const vueApp = createSSRApp(root);
+
+  if (resolveVuerendVaporOptions(options.vapor)) {
+    installVaporInterop(vueApp);
+  }
+
   const body = await renderToString(vueApp);
   const head = route.head
     ? typeof route.head === "function"
