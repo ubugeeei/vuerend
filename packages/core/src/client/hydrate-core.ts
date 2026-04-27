@@ -7,18 +7,9 @@ import type {
 } from "../runtime/types.js";
 
 const RESUME_EVENT_TYPES = ["click", "submit"] as const;
-const CLICK_RESUME_TARGET_SELECTOR = [
-  "button",
-  'input[type="button"]',
-  'input[type="checkbox"]',
-  'input[type="radio"]',
-  'input[type="reset"]',
-  'input[type="submit"]',
-  '[role="button"]',
-  '[role="checkbox"]',
-  '[role="radio"]',
-  '[role="switch"]',
-].join(",");
+const RESUME_EVENT_OPTIONS = { capture: true } as const;
+const CLICK_RESUME_TARGET_SELECTOR =
+  "button,input,select,textarea,[role=button],[role=checkbox],[role=radio],[role=switch]";
 
 export interface IslandClientApp {
   mount(container: Element | string): unknown;
@@ -33,12 +24,15 @@ export async function hydrateIslandsWith(
   islands: readonly AnyDefinedIsland[],
   createApp: CreateIslandClientApp,
 ): Promise<void> {
-  const registry = new Map(
-    islands
-      .map((island) => island.__vuerendIsland)
-      .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
-      .map((entry) => [entry.id, entry]),
-  );
+  const registry = new Map<string, NonNullable<AnyDefinedIsland["__vuerendIsland"]>>();
+
+  for (const island of islands) {
+    const entry = island.__vuerendIsland;
+
+    if (entry) {
+      registry.set(entry.id, entry);
+    }
+  }
 
   const nodes = document.querySelectorAll<HTMLElement>("[data-vs-island][data-vs-component]");
 
@@ -57,10 +51,11 @@ export async function hydrateIslandsWith(
         return;
       }
 
-      const propsNode = document.querySelector<HTMLScriptElement>(
-        `script[data-vs-island-props="${CSS.escape(instanceId)}"]`,
-      );
-      const props = parseProps(propsNode?.textContent ?? "{}");
+      const props = JSON.parse(
+        document.querySelector<HTMLScriptElement>(
+          `script[data-vs-island-props="${CSS.escape(instanceId)}"]`,
+        )?.textContent ?? "{}",
+      ) as JsonObject;
       const hydrate = (node.dataset.vsHydrate as HydrationStrategy | undefined) ?? "load";
       const media = node.dataset.vsMedia;
       let disposeInteractionReplay: (() => void) | undefined;
@@ -73,7 +68,10 @@ export async function hydrateIslandsWith(
 
         mountPromise ??= (async () => {
           const loaded = await definition.load();
-          const component = resolveLoadedComponent(loaded);
+          const component =
+            loaded && typeof loaded === "object" && "default" in loaded
+              ? (loaded.default as Component)
+              : (loaded as Component);
           const app = await createApp(component, props);
           app.mount(node);
           node.dataset.vsMounted = "true";
@@ -90,18 +88,6 @@ export async function hydrateIslandsWith(
       await scheduleHydration(node, hydrate, media, mount);
     }),
   );
-}
-
-function parseProps(value: string): JsonObject {
-  return JSON.parse(value) as JsonObject;
-}
-
-function resolveLoadedComponent(loaded: unknown): Component {
-  if (loaded && typeof loaded === "object" && "default" in loaded) {
-    return (loaded as { default: Component }).default;
-  }
-
-  return loaded as Component;
 }
 
 async function scheduleHydration(
@@ -134,24 +120,24 @@ async function scheduleHydration(
 
 function waitForIdle(): Promise<void> {
   return new Promise((resolve) => {
-    if (typeof window.requestIdleCallback === "function") {
-      window.requestIdleCallback(() => resolve());
+    if (window.requestIdleCallback) {
+      window.requestIdleCallback(resolve as () => void);
       return;
     }
 
-    globalThis.setTimeout(() => resolve(), 1);
+    setTimeout(() => resolve(), 1);
   });
 }
 
 function waitForVisibility(node: HTMLElement): Promise<void> {
   return new Promise((resolve) => {
-    if (!("IntersectionObserver" in window)) {
+    if (!window.IntersectionObserver) {
       resolve();
       return;
     }
 
     const observer = new IntersectionObserver((entries) => {
-      if (entries.some((entry) => entry.isIntersecting)) {
+      if (entries[0]?.isIntersecting) {
         observer.disconnect();
         resolve();
       }
@@ -175,12 +161,7 @@ function waitForMedia(query: string | undefined): Promise<void> {
       return;
     }
 
-    const listener = () => {
-      media.removeEventListener("change", listener);
-      resolve();
-    };
-
-    media.addEventListener("change", listener);
+    media.addEventListener("change", resolve as () => void, { once: true });
   });
 }
 
@@ -222,12 +203,12 @@ function installInteractionReplay(node: HTMLElement, mount: () => Promise<void>)
   };
 
   for (const type of RESUME_EVENT_TYPES) {
-    node.addEventListener(type, listener, { capture: true });
+    node.addEventListener(type, listener, RESUME_EVENT_OPTIONS);
   }
 
   return () => {
     for (const type of RESUME_EVENT_TYPES) {
-      node.removeEventListener(type, listener, { capture: true });
+      node.removeEventListener(type, listener, RESUME_EVENT_OPTIONS);
     }
   };
 }
@@ -257,39 +238,7 @@ function resolveReplayTarget(node: HTMLElement, event: Event): EventTarget | und
 }
 
 function cloneEvent(event: Event): Event {
-  if (event instanceof MouseEvent) {
-    return new MouseEvent(event.type, {
-      altKey: event.altKey,
-      bubbles: event.bubbles,
-      button: event.button,
-      buttons: event.buttons,
-      cancelable: event.cancelable,
-      clientX: event.clientX,
-      clientY: event.clientY,
-      composed: event.composed,
-      ctrlKey: event.ctrlKey,
-      detail: event.detail,
-      metaKey: event.metaKey,
-      screenX: event.screenX,
-      screenY: event.screenY,
-      shiftKey: event.shiftKey,
-    });
-  }
-
-  if (typeof SubmitEvent === "function" && event instanceof SubmitEvent) {
-    return new SubmitEvent(event.type, {
-      bubbles: event.bubbles,
-      cancelable: event.cancelable,
-      composed: event.composed,
-      submitter: event.submitter,
-    });
-  }
-
-  return new Event(event.type, {
-    bubbles: event.bubbles,
-    cancelable: event.cancelable,
-    composed: event.composed,
-  });
+  return new (event.constructor as typeof Event)(event.type, event);
 }
 
 function getElementPath(root: HTMLElement, target: Element): number[] {

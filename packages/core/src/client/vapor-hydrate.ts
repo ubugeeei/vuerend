@@ -34,7 +34,7 @@ export async function hydrateVaporIslands(
 export async function hydrateVaporRuntimeIslands(
   islands: readonly AnyDefinedIsland[],
 ): Promise<void> {
-  return hydrateIslandsWith(islands, createVaporRuntimeIslandApp());
+  return hydrateIslandsWith(islands, createVaporRuntimeApp);
 }
 
 function createVaporIslandApp(options: ResolvedVuerendVaporOptions): CreateIslandClientApp {
@@ -45,17 +45,15 @@ function createVaporIslandApp(options: ResolvedVuerendVaporOptions): CreateIslan
     };
   }
 
-  return async (component, props) => {
-    const { createVaporRuntimeIslandApp } = await loadVaporRuntime();
-    return createVaporRuntimeIslandApp(component, props);
-  };
+  return createVaporRuntimeApp;
 }
 
-function createVaporRuntimeIslandApp(): CreateIslandClientApp {
-  return async (component, props) => {
-    const { createVaporRuntimeIslandApp: createRuntimeApp } = await loadVaporRuntime();
-    return createRuntimeApp(component, props);
-  };
+async function createVaporRuntimeApp(
+  component: Parameters<CreateIslandClientApp>[0],
+  props: Parameters<CreateIslandClientApp>[1],
+) {
+  const { createVaporRuntimeIslandApp } = await loadVaporRuntime();
+  return createVaporRuntimeIslandApp(component, props);
 }
 
 function loadVaporRuntime(): Promise<typeof import("./vapor-runtime.js")> {

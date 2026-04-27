@@ -98,23 +98,9 @@ export function loadVirtualModule(
   if (id === RESOLVED_CLIENT_RUNTIME) {
     return [
       `export { useClientState } from ${JSON.stringify(`${PUBLIC_PACKAGE_NAME}/client`)};`,
-      "export function defineIsland(id, options) {",
-      "  const definition = Object.freeze({",
-      "    id,",
-      "    component: options.component,",
-      "    load: options.load,",
-      '    hydrate: options.hydrate ?? "load",',
-      "    media: options.media,",
-      "    ssr: options.ssr ?? true,",
-      "  });",
-      "  return { __vuerendIsland: definition };",
-      "}",
-      "export function defineIslands(islands) {",
-      "  return islands;",
-      "}",
-      "export function getIslandDefinition(island) {",
-      "  return island?.__vuerendIsland;",
-      "}",
+      "export const defineIsland = (id, options) => ({ __vuerendIsland: { id, load: options.load } });",
+      "export const defineIslands = (islands) => islands;",
+      "export const getIslandDefinition = (island) => island?.__vuerendIsland;",
     ].join("\n");
   }
 
