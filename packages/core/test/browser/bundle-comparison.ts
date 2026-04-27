@@ -21,19 +21,21 @@ const staticRoutePrefix = "/__bundle-comparison/";
 type Next = (error?: unknown) => void;
 
 export async function buildBundleComparison(): Promise<BundleComparison> {
-  const [standard, vapor] = await Promise.all([buildFixture("standard"), buildFixture("vapor")]);
+  return withProductionNodeEnv(async () => {
+    const [standard, vapor] = await Promise.all([buildFixture("standard"), buildFixture("vapor")]);
 
-  const gzipBytes = vapor.totalGzipBytes - standard.totalGzipBytes;
+    const gzipBytes = vapor.totalGzipBytes - standard.totalGzipBytes;
 
-  return {
-    delta: {
-      bytes: vapor.totalBytes - standard.totalBytes,
-      gzipBytes,
-      gzipPercent: (gzipBytes / standard.totalGzipBytes) * 100,
-    },
-    standard,
-    vapor,
-  };
+    return {
+      delta: {
+        bytes: vapor.totalBytes - standard.totalBytes,
+        gzipBytes,
+        gzipPercent: (gzipBytes / standard.totalGzipBytes) * 100,
+      },
+      standard,
+      vapor,
+    };
+  });
 }
 
 async function buildFixture(name: BundleVariant): Promise<BundleBuildSize> {
@@ -187,5 +189,20 @@ function contentType(file: string): string {
       return "application/json; charset=utf-8";
     default:
       return "application/octet-stream";
+  }
+}
+
+async function withProductionNodeEnv<TValue>(run: () => Promise<TValue>): Promise<TValue> {
+  const previousNodeEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = "production";
+
+  try {
+    return await run();
+  } finally {
+    if (previousNodeEnv === undefined) {
+      delete process.env.NODE_ENV;
+    } else {
+      process.env.NODE_ENV = previousNodeEnv;
+    }
   }
 }
