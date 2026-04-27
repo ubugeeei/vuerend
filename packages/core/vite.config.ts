@@ -34,6 +34,7 @@ export default defineConfig({
   },
   test: {
     environment: "node",
+    exclude: ["test/browser/**/*.browser.test.ts"],
     include: ["test/**/*.test.ts"],
   },
 });
