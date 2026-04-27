@@ -6,6 +6,7 @@ export default defineConfig({
     deps: {
       neverBundle: [
         "vue",
+        "@vue/runtime-vapor",
         "vite",
         "srvx/node",
         "@vitejs/plugin-vue",
@@ -33,6 +34,7 @@ export default defineConfig({
   },
   test: {
     environment: "node",
+    exclude: ["test/browser/**/*.browser.test.ts"],
     include: ["test/**/*.test.ts"],
   },
 });

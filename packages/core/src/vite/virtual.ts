@@ -46,11 +46,17 @@ export function loadVirtualModule(
       return "export {};";
     }
 
+    const vaporRuntimeOnly = options.vapor?.mode === "islands" && options.vapor.interop === false;
     const hydrateModule = options.vapor
       ? `${PUBLIC_PACKAGE_NAME}/client/vapor-hydrate`
       : `${PUBLIC_PACKAGE_NAME}/client/hydrate`;
-    const hydrateExport = options.vapor ? "hydrateVaporIslands" : "hydrateIslands";
-    const hydrateArgs = options.vapor ? `islands, ${JSON.stringify(options.vapor)}` : "islands";
+    const hydrateExport = options.vapor
+      ? vaporRuntimeOnly
+        ? "hydrateVaporRuntimeIslands"
+        : "hydrateVaporIslands"
+      : "hydrateIslands";
+    const hydrateArgs =
+      options.vapor && !vaporRuntimeOnly ? `islands, ${JSON.stringify(options.vapor)}` : "islands";
 
     return [
       `import islands from ${JSON.stringify(options.islands)};`,
@@ -92,23 +98,9 @@ export function loadVirtualModule(
   if (id === RESOLVED_CLIENT_RUNTIME) {
     return [
       `export { useClientState } from ${JSON.stringify(`${PUBLIC_PACKAGE_NAME}/client`)};`,
-      "export function defineIsland(id, options) {",
-      "  const definition = Object.freeze({",
-      "    id,",
-      "    component: options.component,",
-      "    load: options.load,",
-      '    hydrate: options.hydrate ?? "load",',
-      "    media: options.media,",
-      "    ssr: options.ssr ?? true,",
-      "  });",
-      "  return { __vuerendIsland: definition };",
-      "}",
-      "export function defineIslands(islands) {",
-      "  return islands;",
-      "}",
-      "export function getIslandDefinition(island) {",
-      "  return island?.__vuerendIsland;",
-      "}",
+      "export const defineIsland = (id, options) => ({ __vuerendIsland: { id, load: options.load } });",
+      "export const defineIslands = (islands) => islands;",
+      "export const getIslandDefinition = (island) => island?.__vuerendIsland;",
     ].join("\n");
   }
 

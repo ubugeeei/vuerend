@@ -1,0 +1,11 @@
+{
+  "name": "@examples/vapor-islands",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@vuerend/core": "workspace:*",
+    "@vue/runtime-vapor": "3.6.0-beta.10",
+    "vite": "^8.0.3",
+    "vue": "3.6.0-beta.10"
+  }
+}

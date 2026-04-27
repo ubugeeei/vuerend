@@ -1,27 +1,13 @@
-import * as Vue from "vue";
-import type { Component } from "vue";
 import type {
   AnyDefinedIsland,
-  JsonObject,
   ResolvedVuerendVaporOptions,
   VuerendVaporOptions,
 } from "../runtime/types.js";
 import { resolveVuerendVaporOptions } from "../runtime/vapor-options.js";
-import {
-  hydrateIslandsWith,
-  type CreateIslandClientApp,
-  type IslandClientApp,
-} from "./hydrate-core.js";
+import { hydrateIslandsWith, type CreateIslandClientApp } from "./hydrate-core.js";
 
-interface VueVaporRuntime {
-  createSSRApp(component: Component, props: JsonObject): IslandClientAppWithUse;
-  createVaporSSRApp?: (component: Component, props: JsonObject) => IslandClientAppWithUse;
-  vaporInteropPlugin?: unknown;
-}
-
-interface IslandClientAppWithUse extends IslandClientApp {
-  use(plugin: unknown): this;
-}
+let vaporRuntimeModule: Promise<typeof import("./vapor-runtime.js")> | undefined;
+let vaporInteropModule: Promise<typeof import("./vapor-interop.js")> | undefined;
 
 /**
  * Hydrates islands through Vue Vapor runtime APIs.
@@ -38,32 +24,44 @@ export async function hydrateVaporIslands(
     interop: false,
   };
 
+  if (vapor.mode === "islands" && !vapor.interop) {
+    return hydrateVaporRuntimeIslands(islands);
+  }
+
   return hydrateIslandsWith(islands, createVaporIslandApp(vapor));
 }
 
-function createVaporIslandApp(options: ResolvedVuerendVaporOptions): CreateIslandClientApp {
-  const runtime = Vue as typeof Vue & VueVaporRuntime;
-
-  if (options.mode === "interop") {
-    return (component, props) => installVaporInterop(runtime.createSSRApp(component, props));
-  }
-
-  return (component, props) => {
-    if (typeof runtime.createVaporSSRApp !== "function") {
-      throw new TypeError("Vuerend vapor hydration requires Vue 3.6+ with createVaporSSRApp.");
-    }
-
-    const app = runtime.createVaporSSRApp(component, props);
-    return options.interop ? installVaporInterop(app) : app;
-  };
+export async function hydrateVaporRuntimeIslands(
+  islands: readonly AnyDefinedIsland[],
+): Promise<void> {
+  return hydrateIslandsWith(islands, createVaporRuntimeApp);
 }
 
-function installVaporInterop(app: IslandClientAppWithUse): IslandClientAppWithUse {
-  const { vaporInteropPlugin } = Vue as typeof Vue & VueVaporRuntime;
-
-  if (!vaporInteropPlugin) {
-    throw new TypeError("Vuerend vapor interop requires Vue 3.6+ with vaporInteropPlugin.");
+function createVaporIslandApp(options: ResolvedVuerendVaporOptions): CreateIslandClientApp {
+  if (options.mode === "interop" || options.interop) {
+    return async (component, props) => {
+      const { createVaporInteropIslandApp } = await loadVaporInterop();
+      return createVaporInteropIslandApp(component, props, options);
+    };
   }
 
-  return app.use(vaporInteropPlugin);
+  return createVaporRuntimeApp;
+}
+
+async function createVaporRuntimeApp(
+  component: Parameters<CreateIslandClientApp>[0],
+  props: Parameters<CreateIslandClientApp>[1],
+) {
+  const { createVaporRuntimeIslandApp } = await loadVaporRuntime();
+  return createVaporRuntimeIslandApp(component, props);
+}
+
+function loadVaporRuntime(): Promise<typeof import("./vapor-runtime.js")> {
+  vaporRuntimeModule ??= import("./vapor-runtime.js");
+  return vaporRuntimeModule;
+}
+
+function loadVaporInterop(): Promise<typeof import("./vapor-interop.js")> {
+  vaporInteropModule ??= import("./vapor-interop.js");
+  return vaporInteropModule;
 }

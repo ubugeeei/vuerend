@@ -89,6 +89,12 @@ export default defineIslands([CounterIsland]);
 
 Vuerend has an opt-in Vapor hydration entry for Vue 3.6+ apps. Use it when the client island registry is made of SFCs authored with `<script setup vapor>` and you want to experiment with smaller island JavaScript:
 
+Install the matching Vapor runtime next to Vue:
+
+```sh
+pnpm add vue@3.6.0-beta.10 @vue/runtime-vapor@3.6.0-beta.10
+```
+
 ```ts
 // vite.config.ts
 import { defineConfig } from "vite";
@@ -105,7 +111,7 @@ export default defineConfig({
 });
 ```
 
-`vapor: true` hydrates islands with Vue's `createVaporSSRApp`. For a gradual migration where Vapor and regular Vue components are intentionally mixed inside the same island tree, use `vapor: "interop"` or `vapor: { mode: "interop" }`. Interop is safer for mixed trees, but it can include both runtimes and reduce the bundle-size win.
+`vapor: true` hydrates islands with Vue's `createVaporSSRApp` and keeps that runtime on a lazy path until an island actually mounts. For a gradual migration where Vapor and regular Vue components are intentionally mixed inside the same island tree, use `vapor: "interop"` or `vapor: { mode: "interop" }`. Interop is safer for mixed trees, but it can include both runtimes and reduce the bundle-size win.
 
 ## Routing
 

@@ -73,4 +73,8 @@ export default defineConfig({
     adapterPack("packages/cloudflare", "@vuerend/cloudflare", "srvx/cloudflare"),
     adapterPack("packages/service-worker", "@vuerend/service-worker", "srvx/service-worker"),
   ],
+  test: {
+    exclude: ["packages/*/test/browser/**/*.browser.test.ts"],
+    include: ["packages/*/test/**/*.test.ts"],
+  },
 });

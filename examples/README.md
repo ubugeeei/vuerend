@@ -25,6 +25,7 @@ pnpm exec vite dev
 | ------------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | `explicit-routes`   | handbooks, policy hubs, small docs sites          | Shows a Zero JavaScript-first MPA where explicit routes, metadata, and a Vue-authored social card all stay visible. |
 | `secure-islands`    | launch sites, waitlists, campaign pages           | Shows how to keep the page static and hydrate only the estimator and signup flow.                                   |
+| `vapor-islands`     | Vue 3.6 Vapor island checks                       | Shows Vapor SSR output and island hydration while keeping the runtime chunk out of the initial entry.               |
 | `mixed-sfc-jsx`     | buying guides, catalogs, editorial commerce pages | Shows SFC pages and JSX islands sharing a saved shortlist across full page loads.                                   |
 | `isr-cache`         | release notes, changelogs, newsroom homepages     | Shows an ISR landing page next to fully prerendered long-tail entries.                                              |
 | `node-srvx`         | internal tools and support desks on Node          | Shows middleware, request-scoped state, and a traditional Node process entry.                                       |
@@ -35,15 +36,17 @@ pnpm exec vite dev
 
 1. Start with `explicit-routes` if you want the clearest picture of the Zero JavaScript-first MPA model.
 2. Move to `secure-islands` if the question is how to add interactivity without hydrating the whole page.
-3. Open `mixed-sfc-jsx` if the sticking point is mixed authoring styles or MPA-friendly browser state.
-4. Read `isr-cache` when the next question is freshness and revalidation.
-5. Use `node-srvx` and `cloudflare-worker` when the question becomes deployment shape.
-6. Open `social-cards` when you need Chromium-backed OG image generation in the same app model.
+3. Check `vapor-islands` when you want the smallest Vapor hydration path.
+4. Open `mixed-sfc-jsx` if the sticking point is mixed authoring styles or MPA-friendly browser state.
+5. Read `isr-cache` when the next question is freshness and revalidation.
+6. Use `node-srvx` and `cloudflare-worker` when the question becomes deployment shape.
+7. Open `social-cards` when you need Chromium-backed OG image generation in the same app model.
 
 ## Example READMEs
 
 - [`explicit-routes`](./explicit-routes/README.md)
 - [`secure-islands`](./secure-islands/README.md)
+- [`vapor-islands`](./vapor-islands/README.md)
 - [`mixed-sfc-jsx`](./mixed-sfc-jsx/README.md)
 - [`isr-cache`](./isr-cache/README.md)
 - [`node-srvx`](./node-srvx/README.md)

@@ -20,6 +20,15 @@ import { joinBase, shouldHandleRequest } from "./helpers.js";
 import type { ResolvedVuerendPluginOptions, VuerendPluginOptions } from "./types.js";
 import { loadVirtualModule, resolveVirtualId } from "./virtual.js";
 
+const VAPOR_SERVER_NO_EXTERNAL = [
+  "@vue/runtime-vapor",
+  "@vue/runtime-dom",
+  "@vue/reactivity",
+  "@vue/shared",
+];
+
+type NoExternal = string | RegExp | Array<string | RegExp> | true | undefined;
+
 /**
  * Installs the Vuerend Vite plugin.
  *
@@ -147,13 +156,28 @@ export function vuerend(options: VuerendPluginOptions): PluginOption[] {
         return;
       }
 
+      const noExternal =
+        state.options.vapor && environment.resolve?.noExternal !== true
+          ? [...normalizeNoExternal(environment.resolve?.noExternal), ...VAPOR_SERVER_NO_EXTERNAL]
+          : environment.resolve?.noExternal;
+      const serverResolve = {
+        ...environment.resolve,
+        conditions: [
+          "vuerend",
+          "workerd",
+          "worker",
+          ...defaultServerConditions.filter((condition) => condition !== "node"),
+        ],
+      };
+
+      if (noExternal !== undefined) {
+        serverResolve.noExternal = noExternal;
+      }
+
       return {
         ...environment,
         keepProcessEnv: true,
-        resolve: {
-          ...environment.resolve,
-          conditions: ["vuerend", "workerd", "worker", ...defaultServerConditions],
-        },
+        resolve: serverResolve,
         build: {
           ...environment.build,
           target: "esnext",
@@ -235,4 +259,12 @@ export function vuerend(options: VuerendPluginOptions): PluginOption[] {
   };
 
   return [vuePlugins, jsxPlugins, plugin].flat();
+}
+
+function normalizeNoExternal(value: NoExternal): Array<string | RegExp> {
+  if (!value || value === true) {
+    return [];
+  }
+
+  return Array.isArray(value) ? value : [value];
 }
