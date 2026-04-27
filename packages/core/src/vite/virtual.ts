@@ -46,11 +46,17 @@ export function loadVirtualModule(
       return "export {};";
     }
 
+    const vaporRuntimeOnly = options.vapor?.mode === "islands" && options.vapor.interop === false;
     const hydrateModule = options.vapor
       ? `${PUBLIC_PACKAGE_NAME}/client/vapor-hydrate`
       : `${PUBLIC_PACKAGE_NAME}/client/hydrate`;
-    const hydrateExport = options.vapor ? "hydrateVaporIslands" : "hydrateIslands";
-    const hydrateArgs = options.vapor ? `islands, ${JSON.stringify(options.vapor)}` : "islands";
+    const hydrateExport = options.vapor
+      ? vaporRuntimeOnly
+        ? "hydrateVaporRuntimeIslands"
+        : "hydrateVaporIslands"
+      : "hydrateIslands";
+    const hydrateArgs =
+      options.vapor && !vaporRuntimeOnly ? `islands, ${JSON.stringify(options.vapor)}` : "islands";
 
     return [
       `import islands from ${JSON.stringify(options.islands)};`,

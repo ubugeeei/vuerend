@@ -1,5 +1,10 @@
 import type { Component } from "vue";
-import type { AnyDefinedIsland, HydrationStrategy, JsonObject } from "../runtime/types.js";
+import type {
+  AnyDefinedIsland,
+  Awaitable,
+  HydrationStrategy,
+  JsonObject,
+} from "../runtime/types.js";
 
 const RESUME_EVENT_TYPES = ["click", "submit"] as const;
 const CLICK_RESUME_TARGET_SELECTOR = [
@@ -19,7 +24,10 @@ export interface IslandClientApp {
   mount(container: Element | string): unknown;
 }
 
-export type CreateIslandClientApp = (component: Component, props: JsonObject) => IslandClientApp;
+export type CreateIslandClientApp = (
+  component: Component,
+  props: JsonObject,
+) => Awaitable<IslandClientApp>;
 
 export async function hydrateIslandsWith(
   islands: readonly AnyDefinedIsland[],
@@ -66,7 +74,8 @@ export async function hydrateIslandsWith(
         mountPromise ??= (async () => {
           const loaded = await definition.load();
           const component = resolveLoadedComponent(loaded);
-          createApp(component, props).mount(node);
+          const app = await createApp(component, props);
+          app.mount(node);
           node.dataset.vsMounted = "true";
           disposeInteractionReplay?.();
         })().catch((error: unknown) => {

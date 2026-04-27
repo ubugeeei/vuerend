@@ -3,7 +3,6 @@ import { createSSRApp } from "vue";
 import { renderDocument, renderImageDocument } from "./document.js";
 import { createIslandRenderState, createRenderRoot, getIslandDefinition } from "./islands.js";
 import { resolveVuerendVaporOptions } from "./vapor-options.js";
-import { installVaporInterop } from "./vapor.js";
 import type {
   AnyRouteDefinition,
   CreateRequestHandlerOptions,
@@ -153,6 +152,7 @@ async function resolveRouteOutput(
   const vueApp = createSSRApp(root);
 
   if (resolveVuerendVaporOptions(options.vapor)) {
+    const { installVaporInterop } = await import("./vapor.js");
     installVaporInterop(vueApp);
   }
 

@@ -30,7 +30,7 @@ export type HeadLink = HeadTagAttributes;
 export type HeadScript = HeadTagAttributes & { children?: string };
 
 /** Binary payload types accepted when returning a rendered image. */
-export type BinaryBody = ArrayBuffer | ArrayBufferView;
+export type BinaryBody = ArrayBuffer | ArrayBufferView<ArrayBuffer>;
 
 type Simplify<T> = {
   [Key in keyof T]: T[Key];
@@ -38,11 +38,13 @@ type Simplify<T> = {
 
 type StripVueBuiltins<Props> = Omit<Props, keyof VNodeProps | keyof AllowedComponentProps>;
 
-type PathParamKey<Segment extends string> = Segment extends `:${infer Key}`
+type PathParamKey<Segment extends string> = Segment extends `:${infer Key}.${string}`
   ? Key
-  : Segment extends "*"
-    ? "wildcard"
-    : never;
+  : Segment extends `:${infer Key}`
+    ? Key
+    : Segment extends "*"
+      ? "wildcard"
+      : never;
 
 type PathParamKeys<Path extends string> = Path extends `${infer Head}/${infer Tail}`
   ? PathParamKey<Head> | PathParamKeys<Tail>

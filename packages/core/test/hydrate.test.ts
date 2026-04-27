@@ -3,6 +3,9 @@ import type { AnyDefinedIsland } from "../src/runtime/types";
 
 const vueMocks = vi.hoisted(() => ({
   createSSRApp: vi.fn(),
+}));
+
+const vaporMocks = vi.hoisted(() => ({
   createVaporSSRApp: vi.fn(),
   vaporInteropPlugin: vi.fn(),
 }));
@@ -10,14 +13,17 @@ const vueMocks = vi.hoisted(() => ({
 vi.mock("vue", () => ({
   Fragment: Symbol("Fragment"),
   createSSRApp: vueMocks.createSSRApp,
-  createVaporSSRApp: vueMocks.createVaporSSRApp,
   defineAsyncComponent: vi.fn((loader) => ({ loader })),
   defineComponent: vi.fn((options) => options),
   h: vi.fn(),
   inject: vi.fn(),
   mergeProps: vi.fn((...props) => Object.assign({}, ...props)),
   provide: vi.fn(),
-  vaporInteropPlugin: vueMocks.vaporInteropPlugin,
+}));
+
+vi.mock("@vue/runtime-vapor", () => ({
+  createVaporSSRApp: vaporMocks.createVaporSSRApp,
+  vaporInteropPlugin: vaporMocks.vaporInteropPlugin,
 }));
 
 describe("hydrateIslands", () => {
@@ -25,8 +31,8 @@ describe("hydrateIslands", () => {
     vi.resetModules();
     vi.unstubAllGlobals();
     vueMocks.createSSRApp.mockReset();
-    vueMocks.createVaporSSRApp.mockReset();
-    vueMocks.vaporInteropPlugin.mockReset();
+    vaporMocks.createVaporSSRApp.mockReset();
+    vaporMocks.vaporInteropPlugin.mockReset();
   });
 
   it("hydrates on an early click and replays it after mount", async () => {
@@ -107,7 +113,7 @@ describe("hydrateIslands", () => {
 
     root.dataset.vsIsland = "island-1";
     root.dataset.vsComponent = "counter";
-    vueMocks.createVaporSSRApp.mockReturnValue(app);
+    vaporMocks.createVaporSSRApp.mockReturnValue(app);
 
     vi.stubGlobal("CSS", {
       escape: (value: string) => value,
@@ -129,8 +135,9 @@ describe("hydrateIslands", () => {
     const { hydrateVaporIslands } = await import("../src/client/vapor-hydrate");
     await hydrateVaporIslands([island], true);
 
-    expect(vueMocks.createVaporSSRApp).toHaveBeenCalledWith({}, {});
+    expect(vaporMocks.createVaporSSRApp).toHaveBeenCalledWith({}, {});
     expect(app.mount).toHaveBeenCalledWith(root);
+    expect(vueMocks.createSSRApp).not.toHaveBeenCalled();
   });
 
   it("can use vapor interop mode for mixed islands", async () => {
@@ -167,7 +174,46 @@ describe("hydrateIslands", () => {
     await hydrateVaporIslands([island], "interop");
 
     expect(vueMocks.createSSRApp).toHaveBeenCalledWith({}, {});
-    expect(app.use).toHaveBeenCalledWith(vueMocks.vaporInteropPlugin);
+    expect(app.use).toHaveBeenCalledWith(vaporMocks.vaporInteropPlugin);
+    expect(app.mount).toHaveBeenCalledWith(root);
+  });
+
+  it("can install interop inside a vapor island app lazily", async () => {
+    const root = new FakeElement("div");
+    const load = vi.fn(async () => ({ default: {} }));
+    const app = {
+      mount: vi.fn(),
+      use: vi.fn(),
+    };
+
+    root.dataset.vsIsland = "island-1";
+    root.dataset.vsComponent = "counter";
+    app.use.mockReturnValue(app);
+    vaporMocks.createVaporSSRApp.mockReturnValue(app);
+
+    vi.stubGlobal("CSS", {
+      escape: (value: string) => value,
+    });
+    vi.stubGlobal("document", {
+      querySelector: vi.fn(() => ({ textContent: "{}" })),
+      querySelectorAll: vi.fn(() => [root]),
+    });
+
+    const island = {
+      __vuerendIsland: {
+        hydrate: "load",
+        id: "counter",
+        load,
+        ssr: true,
+      },
+    } as unknown as AnyDefinedIsland;
+
+    const { hydrateVaporIslands } = await import("../src/client/vapor-hydrate");
+    await hydrateVaporIslands([island], { interop: true });
+
+    expect(vaporMocks.createVaporSSRApp).toHaveBeenCalledWith({}, {});
+    expect(vueMocks.createSSRApp).not.toHaveBeenCalled();
+    expect(app.use).toHaveBeenCalledWith(vaporMocks.vaporInteropPlugin);
     expect(app.mount).toHaveBeenCalledWith(root);
   });
 });
@@ -296,7 +342,14 @@ function createFakeChildren(): FakeChildren {
 }
 
 async function flushPromises() {
-  await Promise.resolve();
-  await Promise.resolve();
-  await Promise.resolve();
+  for (let index = 0; index < 5; index += 1) {
+    await Promise.resolve();
+  }
+
+  await vi.dynamicImportSettled();
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  for (let index = 0; index < 5; index += 1) {
+    await Promise.resolve();
+  }
 }

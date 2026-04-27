@@ -6,6 +6,7 @@ export default defineConfig({
     deps: {
       neverBundle: [
         "vue",
+        "@vue/runtime-vapor",
         "vite",
         "srvx/node",
         "@vitejs/plugin-vue",
