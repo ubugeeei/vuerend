@@ -1,7 +1,9 @@
 dist
 node_modules
 .vite
+.vitest-attachments
 .turbo
+__screenshots__
 .DS_Store
 *.tgz
 .release-artifacts

@@ -168,8 +168,11 @@ describe("createRequestHandler", () => {
             path: "/",
             component: HomePage,
             getProps(context) {
+              const message =
+                typeof context.state.message === "string" ? context.state.message : "";
+
               return {
-                message: String(context.state.message ?? ""),
+                message,
               };
             },
           }),
